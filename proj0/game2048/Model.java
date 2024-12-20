@@ -115,9 +115,26 @@ public class Model extends Observable {
         // changed local variable to true.
         this.board.setViewingPerspective(side);
         int s=board.size();
-        for(int j=0;j<s;j++){
-            for(int i=s-2;i>=0;i--){
-                ;
+        for(int c=0;c<s;c++){
+            int top= s-1;//record top position that can be moved to
+            for(int r=s-2;r>=0;r--){
+                if (board.tile(c,r)!=null){
+                    Tile t=board.tile(c,r);
+                    if (board.tile(c,top)==null){//move but not merge
+                        board.move(c,top,t);
+                        changed=true;
+                    }
+                    else if (board.tile(c,top).value()==t.value()) {//merge
+                        changed=board.move(c,top,t);
+                        score=score+2*t.value();
+                        top--;
+                    }
+                    else {//cant move here but to highest null position
+                        board.move(c,top-1,t);
+                        changed=true;
+                        top--;
+                    }
+                }
             }
         }
         checkGameOver();

@@ -4,6 +4,8 @@
 * TestUpOnly：方向对了，但是没有一次性上移到非0位置
 * 目前想到的方法是按列快慢指针，还是不够勤劳，多尝试几次应该不难
 * tilt尚未解决，其他已完成
+* 做完了，其实还是快慢指针，之前卡太久1是没认真看Google quiz，非常好的提示，2是不够专注
+* 全靠官方内容完成的，开心，卡了将近3天，希望以后能越来越快
 ```
 java.lang.AssertionError: Board incorrect. Before tilting towards NORTH, your board looked like:
 [

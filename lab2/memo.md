@@ -1,0 +1,3 @@
+- step into 进入此行包含的函数内部运算过程
+- step over 当前内容逐行进行，不进入函数内部
+- firstDigitEqualsLastDigit() 首尾个位数字相等

@@ -1,0 +1,5 @@
+- 教了debug里resume的用法：快进到下一次触发断点的时候，常用在循环里
+- debug里可以使用java visualizer插件，可视化，好用
+- 条件断点，断点红点上右键，手写关系条件式，然后点击resume则会快进到触发条件时刻
+- 使用随机数进入各种分支，在不同分支放不同函数进行测试
+- BuggyAList不会改，照着另一个AList样例抄的。主要是resize()看不懂，里面System.arraycopy()看不懂

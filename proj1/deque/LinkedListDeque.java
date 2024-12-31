@@ -126,10 +126,10 @@ public class LinkedListDeque<T> {
     }
     public boolean equals(Object o){
         while (o instanceof LinkedListDeque){
-            if (size != o.size()) return false;
+            if (size != ((LinkedListDeque<?>) o).size()) return false;
             else {
                 for (int i = 0; i < size; i++) {
-                    if (get(i) != o.get(i))
+                    if (get(i) != ((LinkedListDeque<?>) o).get(i))
                         return false;
                 }
             }

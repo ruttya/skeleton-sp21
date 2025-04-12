@@ -31,7 +31,6 @@ public class TestGuitarString  {
         s.pluck();
         double sample = s.sample();
         assertNotEquals("After plucking, your samples should not be 0.", 0.0, sample);
-
         assertEquals("Sample should not change the state of your string.", sample, s.sample(), 0.0);
         assertEquals("Sample should not change the state of your string.", sample, s.sample(), 0.0);
     }

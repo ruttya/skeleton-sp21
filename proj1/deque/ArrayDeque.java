@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T>,Iterator<T> {
+public class ArrayDeque<T> implements Deque<T> {
     private T[] items;
     private int head;
     private int tail;
@@ -99,17 +99,33 @@ public class ArrayDeque<T> implements Deque<T>,Iterator<T> {
 
  */
     public Iterator<T> iterator() {
-        return null;
+        return new ArrayDequeIterator();
     }
-    @Override
-    public boolean hasNext() {
-        return false;
+    private class ArrayDequeIterator implements Iterator<T>{
+        private int pos;
+        private int remain;//当前队列剩余元素数,(<=size)，想法来自deepseek
+        public ArrayDequeIterator() {
+            pos=head;
+            remain=size;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return remain>0;
+            /*自己写的版本
+            if (head<tail && pos>=tail)return false;
+            if (head>tail && pos>=tail && pos<head)return false;
+            return true;
+           */
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) return null;
+            T item=items[pos];
+            pos=(pos+1)%items.length;
+            remain--;
+            return item;
+        }
     }
-
-    @Override
-    public T next() {
-        return null;
-    }
-
-
 }

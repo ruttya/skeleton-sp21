@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Deque<T>,Iterator<T> {
+public class LinkedListDeque<T> implements Deque<T> {
     private class Node<T>{
         public T item;
         public Node<T> next;
@@ -100,25 +100,33 @@ public class LinkedListDeque<T> implements Deque<T>,Iterator<T> {
         }
         return null;
     }
-    //TODO:sth related to iterator(in lecture 11
+    //sth related to iterator(in lecture 11
     public Iterator<T> iterator() {
-        return null;
+        return new LinkedListDequeIterator();
     }
-    @Override
-    public boolean hasNext() {
-        return false;
-    }
+    private class LinkedListDequeIterator implements Iterator<T>{
+        private Node<T> pos;
 
-    @Override
-    public T next() {
-        return null;
+        public LinkedListDequeIterator() {
+            pos=sentinel;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return pos.next!=sentinel;
+        }
+
+        @Override
+        public T next() {
+            T node= pos.item;
+            pos=pos.next;
+            return node;
+        }
     }
     //TODO:equals(). use the 'instance of' keywords for this
     public boolean equals(Object o) {
-
         return false;
     }
-
     public T getRecursive(int index){
         //使用递归实现的get()
         if (isEmpty() || index>=size)return null;

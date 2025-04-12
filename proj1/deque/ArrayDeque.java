@@ -82,7 +82,7 @@ public class ArrayDeque<T> implements Deque<T>,Iterator<T> {
     public T get(int index){
         return items[(head+index)%items.length];
     }
-
+/*
     public boolean equals(Object o) {
         if (o==null)return false;
         //use the 'instance of' keywords for this
@@ -96,6 +96,8 @@ public class ArrayDeque<T> implements Deque<T>,Iterator<T> {
         }
         return false;
     }
+
+ */
     public Iterator<T> iterator() {
         return null;
     }
@@ -108,4 +110,6 @@ public class ArrayDeque<T> implements Deque<T>,Iterator<T> {
     public T next() {
         return null;
     }
+
+
 }

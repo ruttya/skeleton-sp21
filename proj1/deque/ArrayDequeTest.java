@@ -1,12 +1,36 @@
 package deque;
 
 import org.junit.Test;
+
+import java.util.Iterator;
+
 import static org.junit.Assert.*;
 
 
 /** Performs some basic linked list tests. */
-public class LinkedListDequeTest {
+public class ArrayDequeTest {
 
+    @Test
+    public void Test() {
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
+        lld1.addLast(1);
+        lld1.addLast(2);
+        lld1.addLast(3);
+        lld1.addLast(4);
+        lld1.addLast(5);
+        lld1.addLast(6);
+        lld1.addLast(7);
+        lld1.addLast(8);
+        lld1.addLast(9);
+        lld1.addLast(10);
+        lld1.addLast(11);
+        lld1.removeLast();
+        lld1.removeFirst();
+        Iterator<Integer> i1 = lld1.iterator();
+        while(i1.hasNext()) {
+            System.out.println(i1.next());
+        }
+    }
     @Test
     /** Adds a few things to the list, checking isEmpty() and size() are correct,
      * finally printing the results.
@@ -16,21 +40,21 @@ public class LinkedListDequeTest {
 
         //System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
 
-        LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+        ArrayDeque<String> ad1 = new ArrayDeque<>();
 
-		assertTrue("A newly initialized LLDeque should be empty", lld1.isEmpty());
-		lld1.addFirst("front");
+		assertTrue("A newly initialized LLDeque should be empty", ad1.isEmpty());
+		ad1.addFirst("front");
 		// The && operator is the same as "and" in Python.
 		// It's a binary operator that returns true if both arguments true, and false otherwise.
-        assertEquals(1, lld1.size());
-        assertFalse("lld1 should now contain 1 item", lld1.isEmpty());
+        assertEquals(1, ad1.size());
+        assertFalse("ad1 should now contain 1 item", ad1.isEmpty());
 
-		lld1.addLast("middle");
-		assertEquals(2, lld1.size());
-		lld1.addLast("back");
-		assertEquals(3, lld1.size());
+		ad1.addLast("middle");
+		assertEquals(2, ad1.size());
+		ad1.addLast("back");
+		assertEquals(3, ad1.size());
 		System.out.println("Printing out deque: ");
-		lld1.printDeque();
+		ad1.printDeque();
 
     }
 
@@ -40,17 +64,17 @@ public class LinkedListDequeTest {
 
        // System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
 
-        LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
 		// should be empty
-		assertTrue("lld1 should be empty upon initialization", lld1.isEmpty());
+		assertTrue("ad1 should be empty upon initialization", ad1.isEmpty());
 
-		lld1.addFirst(10);
+		ad1.addFirst(10);
 		// should not be empty
-		assertFalse("lld1 should contain 1 item", lld1.isEmpty());
+		assertFalse("ad1 should contain 1 item", ad1.isEmpty());
 
-		lld1.removeFirst();
+		ad1.removeFirst();
 		// should be empty
-		assertTrue("lld1 should be empty after removal", lld1.isEmpty());
+		assertTrue("ad1 should be empty after removal", ad1.isEmpty());
 
     }
 
@@ -59,15 +83,15 @@ public class LinkedListDequeTest {
     public void removeEmptyTest() {
 
         //System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
-        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
-        lld1.addFirst(3);
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        ad1.addFirst(3);
 
-        lld1.removeLast();
-        lld1.removeFirst();
-        lld1.removeLast();
-        lld1.removeFirst();
+        ad1.removeLast();
+        ad1.removeFirst();
+        ad1.removeLast();
+        ad1.removeFirst();
 
-        int size = lld1.size();
+        int size = ad1.size();
         String errorMsg = "  Bad size returned when removing from empty deque.\n";
         errorMsg += "  student size() returned " + size + "\n";
         errorMsg += "  actual size() returned 0\n";

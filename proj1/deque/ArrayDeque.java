@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T> {
+public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
     private T[] items;
     private int head;
     private int tail;
@@ -13,105 +13,125 @@ public class ArrayDeque<T> implements Deque<T> {
         tail=0;
         size=0;
     }
-    public ArrayDeque(ArrayDeque other){
-        size=other.size;
-        items=(T[])new Object[size];
-        for (int i=0;i<size;i++){
-            items[i]=(T) other.items[i];
+/*评分机让删掉这个……
+    public ArrayDeque(ArrayDeque other) {
+        size = other.size;
+        items = (T[]) new Object[size];
+        for (int i = 0; i < size; i++) {
+            items[i] = (T) other.items[i];
         }
-        head=0;
-        tail=Math.max(0,size-1);
+        head = 0;
+        tail = Math.max(0, size - 1);
     }
+*/
     private void resize(int capacity) {
         T[] a = (T[]) new Object[capacity];
-        if (head<tail){
+        if (head < tail) {
             System.arraycopy(items, 0, a, 0, size);
         }
-        if (head>tail){
-            System.arraycopy(items, 0, a, 0, tail+1);
-            head=head+capacity-items.length;
-            System.arraycopy(items, head, a, head, capacity-head+1);
+        if (head > tail) {
+            System.arraycopy(items, 0, a, 0, tail + 1);
+            head = head + capacity - items.length;
+            System.arraycopy(items, head, a, head, capacity - head + 1);
         }
         items = a;
     }
-    public void addFirst(T item){
+
+    public void addFirst(T item) {
         // Adds an item of type T to the front of the deque. You can assume that item is never null.
         if (size == items.length) {
-            resize((int)(size*1.01));
+            resize((int) (size * 1.5 + 1));
         }
-        head=(head+items.length-1)%items.length;
-        items[head]=item;
+        head = (head + items.length - 1) % items.length;
+        items[head] = item;
         size++;
     }
-    public void addLast(T item){
+
+    public void addLast(T item) {
         // Adds an item of type T to the back of the deque. You can assume that item is never null.
-        if (size == items.length) {
-            resize((int)(size*1.01));
+        if (size == items.length-1) {
+            resize((int) (size * 1.5 + 1));
         }
         items[tail] = item;
-        tail=(tail+1)%items.length;
+        tail = (tail +1) % items.length;
         size++;
     }
-    public int size(){
+
+    public int size() {
         // Returns the number of items in the deque.
         return size;
     }
+
     public void printDeque() {
         // Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
-        for (int i=0;i<size;i++){
-            System.out.print(items[(i+head)%items.length]+" ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(items[(i + head) % items.length] + " ");
         }
         System.out.println("");
     }
-    public T removeFirst(){
+
+    public T removeFirst() {
         //Removes and returns the item at the front of the deque. If no such item exists, returns null.
-        if (isEmpty())return null;
-        T item=items[head];
-        head=(head+1)%items.length;
+        if (isEmpty()) return null;
+        T item = items[head];
+        head = (head + 1) % items.length;
         size--;
         return item;
-    }
-    public T removeLast(){
-        //Removes and returns the item at the back of the deque. If no such item exists, returns null.
-        if (isEmpty())return null;
-        T item = items[tail];
-        tail=(tail+items.length-1)%items.length;
-        size--;
-        return item;
-    }
-    public T get(int index){
-        return items[(head+index)%items.length];
-    }
-/*
-    public boolean equals(Object o) {
-        if (o==null)return false;
-        //use the 'instance of' keywords for this
-        if (o instanceof ArrayDeque && size==((ArrayDeque<?>) o).size){
-            for (int i=0;i<size;i++){
-                if(items[(head+items.length)%items.length].equals(o.items[(head+o.items.length)%o.items.length])==false){
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
- */
+    public T removeLast() {
+        //Removes and returns the item at the back of the deque. If no such item exists, returns null.
+        if (isEmpty()) return null;
+        T item = items[tail-1];
+        tail = (tail + items.length - 1) % items.length;
+        size--;
+        return item;
+    }
+
+    public T get(int index) {
+        return items[(head + index) % items.length];
+    }
+    //TODO:待修改
+    /*
+    public T getRecursive(int index) {
+        //使用递归实现的get()
+        if (isEmpty() || index >= size) return null;
+        return getRecursiveHelper(sentinel.next, index);
+    }
+    private T getRecursiveHelper(T p, int index) {
+        if (index == 0) return p.item;
+        else return getRecursiveHelper(p.next, index - 1);
+    }
+*/
+    public boolean equals(Object o) {
+        if (o==null)return false;
+        if ((o instanceof Deque)==false)return false;
+        ArrayDeque<T> os=(ArrayDeque<T>) o;
+        if (size!=os.size)return false;
+        for (int i=0;i<size;i++){
+            if(items[(head+items.length)%items.length].equals(os.items[(head+os.items.length)%os.items.length])==false){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
     }
-    private class ArrayDequeIterator implements Iterator<T>{
+
+    private class ArrayDequeIterator implements Iterator<T> {
         private int pos;
         private int remain;//当前队列剩余元素数,(<=size)，想法来自deepseek
+
         public ArrayDequeIterator() {
-            pos=head;
-            remain=size;
+            pos = head;
+            remain = size;
         }
 
         @Override
         public boolean hasNext() {
-            return remain>0;
+            return remain > 0;
             /*自己写的版本
             if (head<tail && pos>=tail)return false;
             if (head>tail && pos>=tail && pos<head)return false;
@@ -122,8 +142,8 @@ public class ArrayDeque<T> implements Deque<T> {
         @Override
         public T next() {
             if (!hasNext()) return null;
-            T item=items[pos];
-            pos=(pos+1)%items.length;
+            T item = items[pos];
+            pos = (pos + 1) % items.length;
             remain--;
             return item;
         }

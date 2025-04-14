@@ -5,6 +5,7 @@ import java.util.Iterator;
 public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private T[] items;
     private int head;
+    //为了和空队列区分，tail=末尾节点索引+1
     private int tail;
     private int size;
 
@@ -26,15 +27,20 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             tail = Math.max(0, size - 1);
         }
     */
-    private void resize(int capacity) {
+    /*resize 是private属性，测试临时改成public*/
+    public void resize(int capacity) {
+        if (capacity < size) {
+            System.out.println("capacity is smaller than size, can't make resize.");
+            return;
+        }
         T[] a = (T[]) new Object[capacity];
         if (head < tail) {
-            System.arraycopy(items, 0, a, 0, size);
+            System.arraycopy(items, head, a, 0, size);
         }
-        if (head > tail) {
-            System.arraycopy(items, 0, a, 0, tail + 1);
+        if (head >= tail) {
+            System.arraycopy(items, 0, a, 0, tail);
             head = head + capacity - items.length;
-            System.arraycopy(items, head, a, head, capacity - head + 1);
+            System.arraycopy(items, items.length - capacity + head, a, head, capacity - head);
         }
         items = a;
     }
@@ -84,7 +90,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     public T removeLast() {
         //Removes and returns the item at the back of the deque. If no such item exists, returns null.
         if (isEmpty()) return null;
-        T item = items[tail - 1];
+        T item = items[(tail + items.length - 1) / items.length];
         tail = (tail + items.length - 1) % items.length;
         size--;
         return item;
@@ -94,25 +100,13 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return items[(head + index) % items.length];
     }
 
-    //TODO:待修改
-    /*
-    public T getRecursive(int index) {
-        //使用递归实现的get()
-        if (isEmpty() || index >= size) return null;
-        return getRecursiveHelper(sentinel.next, index);
-    }
-    private T getRecursiveHelper(T p, int index) {
-        if (index == 0) return p.item;
-        else return getRecursiveHelper(p.next, index - 1);
-    }
-*/
     public boolean equals(Object o) {
         if (o == null) return false;
         if ((o instanceof Deque) == false) return false;
         ArrayDeque<T> os = (ArrayDeque<T>) o;
-        if (size != os.size) return false;
+        if (size != os.size()) return false;
         for (int i = 0; i < size; i++) {
-            if (items[(head + items.length) % items.length].equals(os.items[(head + os.items.length) % os.items.length]) == false) {
+            if (get(i).equals(os.get(i)) == false) {
                 return false;
             }
         }

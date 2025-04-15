@@ -11,8 +11,9 @@ public class MaxLinkedListDeque<T> extends LinkedListDeque<T> {
 
     //此文件不要求提交，搁置……
     public T max() {
-        //returns the maximum element in the deque as governed by the previously given Comparator. If the MaxArrayDeque is empty, simply return null.
-
+        /* returns the maximum element in the deque as governed
+        by the previously given Comparator. If the MaxArrayDeque
+        is empty, simply return null. */
         return null;
     }
 

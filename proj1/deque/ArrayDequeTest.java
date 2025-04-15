@@ -279,4 +279,33 @@ public class ArrayDequeTest {
         student.addLast(8);
         assertEquals("should be 8", 8, (int) student.removeLast());
     }
+
+    /*
+     * d011) AD-basic: get. (0/8.483)*/
+    @Test
+    public void d011Test() {
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        ad1.addLast(0); //0
+        ad1.addLast(1); //0 1
+        ad1.get(1);//      ==> 1
+        ad1.addLast(3); //0 1 3
+        ad1.get(2); //      ==> 3
+        ad1.get(1); //      ==> 1
+        assertEquals("should be 3", 3, (int) ad1.removeLast()); //0 1
+        ad1.addFirst(7); //7 0 1
+        assertEquals("should be 1", 1, (int) ad1.removeLast()); //7 0
+        ad1.addLast(9); //7 0 9
+        assertEquals("should be 7", 7, (int) ad1.removeFirst()); //0 9
+        assertEquals("should be 9", 9, (int) ad1.removeLast()); //0
+        assertEquals("should be 0", 0, (int) ad1.removeLast()); //null
+        ad1.addFirst(13); //13
+        assertEquals("should be 13", 13, (int) ad1.removeLast()); // null
+        ad1.addFirst(15); //15
+        ad1.get(0); //      ==> 15
+        ad1.addFirst(17); //17 15
+        assertEquals("should be 15", 15, (int) ad1.removeLast()); //17
+        ad1.addLast(19); //17 19
+        ad1.addLast(20); //17 19 20
+        assertEquals("should be 17", 17, (int) ad1.removeFirst()); //19 20
+    }
 }

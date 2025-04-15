@@ -4,14 +4,15 @@ import java.util.Iterator;
 
 public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     private class Node<T> {
-        public T item;
-        public Node<T> next;
-        public Node<T> prev;
+        T item;
+        Node<T> next;
+        Node<T> prev;
 
-        public Node(T item, Node<T> prev, Node<T> next) {
+        Node(T item, Node<T> prev, Node<T> next) {
             this.item = item;
             this.prev = prev;
-            this.next = next;//此处直接照搬SLList.java
+            this.next = next;
+            //此处直接照搬SLList.java
         }
     }
 
@@ -56,43 +57,48 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return size;
     }
 
-    ;
-
     public void printDeque() {
+        /*Prints the items in the deque from first to last,
+        separated by a space. Once all the items have been
+        printed, print out a new line.*/
         Node<T> p = sentinel;
         for (int i = 0; i < size; i++) {
             p = p.next;
             System.out.print(p.item + " ");
         }
         System.out.println("");
-    }// Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
+    }
 
     public T removeFirst() {
         if (isEmpty()) {
             return null;
         }
-        Node<T> p = sentinel.next;//p=head
+        Node<T> p = sentinel.next; //p=head
         sentinel.next.next.prev = sentinel;
         sentinel.next = p.next;
         size--;
         return p.item;
     }
 
-    //Removes and returns the item at the front of the deque. If no such item exists, returns null.
+    //Removes and returns the item at the front of the deque. \
+    //If no such item exists, returns null.
     public T removeLast() {
         if (isEmpty()) {
             return null;
         }
-        Node<T> p = sentinel.prev;//p=last
+        Node<T> p = sentinel.prev; //p=last
         sentinel.prev = p.prev;
         sentinel.prev.next = sentinel;
         size--;
         return p.item;
     }
 
-    //Removes and returns the item at the back of the deque. If no such item exists, returns null.
+    //Removes and returns the item at the back of the deque.
+    // If no such item exists, returns null.
     public T get(int index) {
-        if (isEmpty() || index >= size) return null;
+        if (isEmpty() || index >= size) {
+            return null;
+        }
         Node<T> p = sentinel.next;
         for (int i = 0; i < size; i++) {
             if (i == index) {

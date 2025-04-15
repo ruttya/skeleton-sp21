@@ -28,9 +28,12 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
     */
     /*resize 是private属性，测试临时改成public*/
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         if (capacity < size) {
             System.out.println("capacity is smaller than size, can't make resize.");
+            return;
+        }
+        if (capacity == size) {
             return;
         }
         T[] a = (T[]) new Object[capacity];
@@ -46,7 +49,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public void addFirst(T item) {
-        // Adds an item of type T to the front of the deque. You can assume that item is never null.
+        /* Adds an item of type T to the front of the deque.
+        You can assume that item is never null.
+         */
         if (size == items.length) {
             resize((int) (size * 1.5 + 1));
         }
@@ -56,8 +61,10 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public void addLast(T item) {
-        // Adds an item of type T to the back of the deque. You can assume that item is never null.
-        if (size == items.length - 1) {
+        /* Adds an item of type T to the back of the deque.
+        You can assume that item is never null.
+         */
+        if (size >= items.length - 1) {
             resize((int) (size * 1.5 + 1));
         }
         items[tail] = item;
@@ -71,7 +78,10 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public void printDeque() {
-        // Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
+        /* Prints the items in the deque from first to last,
+        separated by a space. Once all the items have been
+        printed, print out a new line.
+         */
         for (int i = 0; i < size; i++) {
             System.out.print(items[(i + head) % items.length] + " ");
         }
@@ -79,7 +89,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public T removeFirst() {
-        //Removes and returns the item at the front of the deque. If no such item exists, returns null.
+        /* Removes and returns the item at the front of the deque.
+        If no such item exists, returns null.
+         */
         if (isEmpty()) {
             return null;
         }
@@ -93,7 +105,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public T removeLast() {
-        //Removes and returns the item at the back of the deque. If no such item exists, returns null.
+        /* Removes and returns the item at the back of the deque.
+        If no such item exists, returns null.
+         */
         if (isEmpty()) {
             return null;
         }
@@ -114,10 +128,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if ((o instanceof Deque) == false) {
+        if (o == null || (o instanceof Deque) == false) {
             return false;
         }
         ArrayDeque<T> os = (ArrayDeque<T>) o;
@@ -138,7 +149,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     private class ArrayDequeIterator implements Iterator<T> {
         private int pos;
-        private int remain;//当前队列剩余元素数,(<=size)，想法来自deepseek
+        //当前队列剩余元素数,(<=size)，想法来自deepseek
+        private int remain;
 
         public ArrayDequeIterator() {
             pos = head;

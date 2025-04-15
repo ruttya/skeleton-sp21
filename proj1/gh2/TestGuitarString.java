@@ -16,7 +16,7 @@ public class TestGuitarString  {
     public void testPluckTheAString() {
         GuitarString aString = new GuitarString(GuitarHeroLite.CONCERT_A);
         aString.pluck();
-        for (int i = 0; i < 50000; i += 1) {
+        for (int i = 0; i < 50000; i += 1) { //这个50000相当于SR
             StdAudio.play(aString.sample());
             aString.tic();
         }

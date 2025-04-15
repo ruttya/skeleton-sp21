@@ -15,7 +15,6 @@ public class GuitarHeroLite {
         GuitarString stringC = new GuitarString(CONCERT_C);
 
         while (true) {
-
             /* check if the user has typed a key; if so, process it */
             if (StdDraw.hasNextKeyTyped()) {
                 char key = StdDraw.nextKeyTyped();
@@ -27,6 +26,7 @@ public class GuitarHeroLite {
             }
 
             /* compute the superposition of samples */
+            /* 没pluck() 的string==0, 所以sample==0, 不影响声音 */
             double sample = stringA.sample() + stringC.sample();
 
             /* play the sample on standard audio */

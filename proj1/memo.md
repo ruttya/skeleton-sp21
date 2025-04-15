@@ -54,13 +54,13 @@
 - 关于`equals()`，如果是元素值相同的LLD和AD比较，希望返回true，所以
   - 转换类型时使用接口名作为类型名
   - 比较元素时使用接口内声明过的方法名
+- `GuitarHero`涉及在上一个按键的余音中按下第二个键要叠加出声的问题，好像线程哦……
 
 # 进度
 - apr10，看lecture代码中 https://joshhug.gitbooks.io/hug61b/content/chap2/chap22.html
 - apr11，LLDeque已完成（除了`equalto()`和`iterator`相关，visualizer插件真乃神器，安静环境效率起飞。怪不得程序员都是双屏，一个ide+一个文档&deepseek才够用
 - 视频全在油管，slide和quiz全在谷歌doc，麻烦死了
 - apr12凌晨，ADeque从`addFirst()`开始
-- apr12，`GuitarHero`进行中。
 - 评分拉大垮，style check没做（好严格啊。arraydeque果然很有问题，还是自己写test，不能偷懒。迭代器报错。Max.java文件报错。
 - apr13，ADeque认真写个testcase,重新修正一遍
 - MaxLLD不提交但是MaxArrayDeque.java要交的……别偷懒乖乖写

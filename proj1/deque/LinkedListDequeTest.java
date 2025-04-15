@@ -163,4 +163,17 @@ public class LinkedListDequeTest {
             assertEquals("Should have the same value", (int) lld1.getRecursive(i), i + 1);
         }
     }
+
+    @Test
+    public void equalsTest() {
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+        LinkedListDeque<Integer> lld2 = new LinkedListDeque<>();
+        for (int i = 0; i < 5; i++) {
+            lld1.addLast(i + 1);
+            lld2.addLast(i + 1);
+        }
+        assertTrue("Should be true as lld1 equals lld2", lld1.equals(lld2));
+        lld2.removeFirst();
+        assertFalse("Should be false as lld1 doesn't equal lld2", lld1.equals(lld2));
+    }
 }

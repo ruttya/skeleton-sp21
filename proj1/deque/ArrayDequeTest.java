@@ -247,4 +247,36 @@ public class ArrayDequeTest {
             assertEquals("Should have the same value", lld3.get(i), lld4.get(i));
         }
     }
+
+    //test case from gradescope.com
+    /*d003) AD-basic: Random addFirst/removeLast/isEmpty tests. (0/8.483)
+     */
+    @Test
+    public void d003Test() {
+        ArrayDeque<Integer> student = new ArrayDeque<>();
+        assertTrue("Should be true when student is initialized", student.isEmpty());
+        student.addFirst(1);
+        assertEquals("1st item of student should be 1", 1, (int) student.get(0));
+        student.addFirst(2);
+        assertEquals("1st item of student should be 2", 2, (int) student.get(0));
+        student.addFirst(3);
+        assertEquals("1st item of student should be 3", 3, (int) student.get(0));
+        assertEquals("should be 1", 1, (int) student.removeLast());
+    }
+
+    /*d004) AD-basic: Random addLast/removeLast/isEmpty tests. (0/8.483)*/
+    @Test
+    public void d004Test() {
+        ArrayDeque<Integer> student = new ArrayDeque<>();
+        student.addLast(0);
+        student.addLast(1);
+        student.addLast(2);
+        student.addLast(3);
+        student.addLast(4);
+        student.addLast(5);
+        student.isEmpty();
+        student.addLast(7);
+        student.addLast(8);
+        assertEquals("should be 8", 8, (int) student.removeLast());
+    }
 }

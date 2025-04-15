@@ -68,7 +68,9 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }// Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
 
     public T removeFirst() {
-        if (isEmpty()) return null;
+        if (isEmpty()) {
+            return null;
+        }
         Node<T> p = sentinel.next;//p=head
         sentinel.next.next.prev = sentinel;
         sentinel.next = p.next;
@@ -78,7 +80,9 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     //Removes and returns the item at the front of the deque. If no such item exists, returns null.
     public T removeLast() {
-        if (isEmpty()) return null;
+        if (isEmpty()) {
+            return null;
+        }
         Node<T> p = sentinel.prev;//p=last
         sentinel.prev = p.prev;
         sentinel.prev.next = sentinel;
@@ -125,14 +129,22 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     //equals(). use the 'instance of' keywords for this
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) {
+            return false;
+        }
+        if ((o instanceof Deque) == false) {
+            return false;
+        }
         LinkedListDeque<T> os = (LinkedListDeque<T>) o;
-        if (size != os.size) return false;
+        if (size != os.size) {
+            return false;
+        }
         Node<T> n1 = sentinel.next;
         Node<T> n2 = os.sentinel.next;
         for (int i = 0; i < size; i++) {
-            if (n1.item.equals(n2.item) == false) return false;
+            if (n1.item.equals(n2.item) == false) {
+                return false;
+            }
             n1 = n1.next;
             n2 = n2.next;
         }
@@ -141,13 +153,17 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     public T getRecursive(int index) {
         //使用递归实现的get()
-        if (isEmpty() || index >= size) return null;
+        if (isEmpty() || index >= size) {
+            return null;
+        }
         return getRecursiveHelper(sentinel.next, index);
     }
 
     private T getRecursiveHelper(Node<T> p, int index) {
-        if (index == 0) return p.item;
-        else return getRecursiveHelper(p.next, index - 1);
+        if (index == 0) {
+            return p.item;
+        }
+        return getRecursiveHelper(p.next, index - 1);
     }
 
 }

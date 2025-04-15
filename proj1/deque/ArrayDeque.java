@@ -80,7 +80,12 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     public T removeFirst() {
         //Removes and returns the item at the front of the deque. If no such item exists, returns null.
-        if (isEmpty()) return null;
+        if (isEmpty()) {
+            return null;
+        }
+        if (2 * size < items.length) {
+            resize(size + 1);
+        }
         T item = items[head];
         head = (head + 1) % items.length;
         size--;
@@ -89,22 +94,36 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     public T removeLast() {
         //Removes and returns the item at the back of the deque. If no such item exists, returns null.
-        if (isEmpty()) return null;
-        T item = items[(tail + items.length - 1) / items.length];
+        if (isEmpty()) {
+            return null;
+        }
+        if (2 * size < items.length) {
+            resize(size + 1);
+        }
+        T item = items[(tail + items.length - 1) % items.length];
         tail = (tail + items.length - 1) % items.length;
         size--;
         return item;
     }
 
     public T get(int index) {
+        if (size == 0 || index >= size) {
+            return null;
+        }
         return items[(head + index) % items.length];
     }
 
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if ((o instanceof Deque) == false) return false;
+        if (o == null) {
+            return false;
+        }
+        if ((o instanceof Deque) == false) {
+            return false;
+        }
         ArrayDeque<T> os = (ArrayDeque<T>) o;
-        if (size != os.size()) return false;
+        if (size != os.size()) {
+            return false;
+        }
         for (int i = 0; i < size; i++) {
             if (get(i).equals(os.get(i)) == false) {
                 return false;
@@ -138,7 +157,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
         @Override
         public T next() {
-            if (!hasNext()) return null;
+            if (!hasNext()) {
+                return null;
+            }
             T item = items[pos];
             pos = (pos + 1) % items.length;
             remain--;

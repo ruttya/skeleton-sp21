@@ -132,15 +132,17 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     public boolean equals(Object o) {
         //style check 判错，使用deepseek简化版本，此写法在o为null时自动返回false
         //if (o == null || (o instanceof Deque) == false) {
-        if (!(o instanceof ArrayDeque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
-        ArrayDeque<T> os = (ArrayDeque<T>) o;
+        if (this == o) {
+            return true;
+        }
+        Deque<T> os = (Deque<T>) o; //转换时采用接口名是可以的
         if (size != os.size()) {
             return false;
         }
         for (int i = 0; i < size; i++) {
-            //style check判错，简化后版本
             if (!get(i).equals(os.get(i))) {
                 return false;
             }

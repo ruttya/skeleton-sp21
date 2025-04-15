@@ -20,7 +20,7 @@ public class GuitarString {
     public GuitarString(double frequency) {
         buffer = new LinkedListDeque<>();
         int capacity = (int) Math.round(SR / frequency);
-        System.out.println("capacity:" + capacity);//
+        System.out.println("capacity:" + capacity); //
         for (int i = 0; i < capacity; i++) {
             buffer.addLast(0.0);
         }
@@ -33,9 +33,9 @@ public class GuitarString {
             buffer.removeFirst();
             buffer.addLast(r);
             r = Math.random() - 0.5;
-            System.out.print(r + " ");//
+            System.out.print(r + " "); //
         }
-        System.out.println("");//
+        System.out.println(""); //
     }
 
     /* Advance the simulation one time step by performing one iteration of

@@ -25,9 +25,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         if (isEmpty()) {
             return null;
         }
-        if (isEmpty()) {
-            return null;
-        }
+
         T max = get(0);
         for (T element : this) {
             //java也有这种用法啊

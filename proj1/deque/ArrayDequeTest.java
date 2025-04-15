@@ -81,20 +81,6 @@ public class ArrayDequeTest {
 
     @Test
     public void equalsTest() {
-        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
-        ArrayDeque<Integer> ad2 = new ArrayDeque<>();
-        ad1 = addNums(ad1, 3);
-        ad2 = addNums(ad2, 3);
-        assertTrue("Should be true as ad1 equals ad2", ad1.equals(ad2));
-        ad2.removeLast();
-        assertFalse("Should be false as ad2 is modified", ad1.equals(ad2));
-        ad1.removeLast();
-        ad2.removeLast();
-        ad1.removeLast();
-        ad2.removeLast();
-        ad1.removeLast();
-        assertTrue("Should be true as ad1 and ad2 are empty", ad1.equals(ad2));
-
         //比较索引不同的队列
         ArrayDeque<Integer> ad3 = new ArrayDeque<>();
         ArrayDeque<Integer> ad4 = new ArrayDeque<>();
@@ -105,6 +91,18 @@ public class ArrayDequeTest {
         ad4.addFirst(2);
         ad4.addFirst(1);
         assertTrue("Should be true as ad3 equals ad4", ad3.equals(ad4));
+
+        //比较LLD和AD
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+        ad1.addLast(1);
+        ad1.addLast(2);
+        ad1.addLast(3);
+        lld1.addLast(1);
+        lld1.addLast(2);
+        lld1.addLast(3);
+        assertTrue("Should be true as ad1 equals lld1", ad1.equals(lld1));
+        assertTrue("Should be true as ad1 equals lld1", lld1.equals(ad1));
     }
 
     @Test

@@ -136,26 +136,20 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     //equals(). use the 'instance of' keywords for this
     public boolean equals(Object o) {
-        if (o == null) {
+        //style check 判错，使用deepseek简化版本，此写法在o为null时自动返回false
+        if (!(o instanceof Deque)) {
             return false;
         }
-        //style check 判错，使用deepseek简化版本
-        if (!(o instanceof LinkedListDeque)) {
+        Deque<T> os = (Deque<T>) o;
+        if (size != os.size()) {
             return false;
         }
-        LinkedListDeque<T> os = (LinkedListDeque<T>) o;
-        if (size != os.size) {
-            return false;
-        }
-        Node<T> n1 = sentinel.next;
-        Node<T> n2 = os.sentinel.next;
+
         for (int i = 0; i < size; i++) {
             //style check 判错，使用deepseek简化版本
-            if (!n1.item.equals(n2.item)) {
+            if (!get(i).equals(os.get(i))) {
                 return false;
             }
-            n1 = n1.next;
-            n2 = n2.next;
         }
         return true;
     }

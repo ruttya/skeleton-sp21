@@ -2,7 +2,6 @@ package gh2;
 
 import deque.Deque;
 import deque.LinkedListDeque;
-import edu.princeton.cs.introcs.StdAudio;
 
 public class GuitarString {
 
@@ -11,10 +10,10 @@ public class GuitarString {
 
     /* Buffer for storing sound data. */
     /* Buffer（缓冲区）是一段临时存储音频数据的内存区域，用于协调不同速度的音频处理环节。
-    * StdAudio.play(double) 控制麦克风薄膜扩张，薄膜的震动。
-    * double标识振膜的瞬时位移位置
-    * 连续位移变化形成可被听觉感知的声波，
-    * 单次执行StdAudio.play()只有位移没有振动，所以听不到声音。*/
+     * StdAudio.play(double) 控制麦克风薄膜扩张，薄膜的震动。
+     * double标识振膜的瞬时位移位置
+     * 连续位移变化形成可被听觉感知的声波，
+     * 单次执行StdAudio.play()只有位移没有振动，所以听不到声音。*/
     private Deque<Double> buffer;
 
     /* Create a guitar string of the given frequency.  */

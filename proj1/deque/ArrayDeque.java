@@ -39,6 +39,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         T[] a = (T[]) new Object[capacity];
         if (head < tail) {
             System.arraycopy(items, head, a, 0, size);
+            head = 0;
+            tail = size;
         }
         if (head >= tail) {
             System.arraycopy(items, 0, a, 0, tail);
@@ -128,7 +130,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public boolean equals(Object o) {
-        if (o == null || (o instanceof Deque) == false) {
+        //style check 判错，使用deepseek简化版本，此写法在o为null时自动返回false
+        //if (o == null || (o instanceof Deque) == false) {
+        if (!(o instanceof ArrayDeque)) {
             return false;
         }
         ArrayDeque<T> os = (ArrayDeque<T>) o;
@@ -136,7 +140,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return false;
         }
         for (int i = 0; i < size; i++) {
-            if (get(i).equals(os.get(i)) == false) {
+            //style check判错，简化后版本
+            if (!get(i).equals(os.get(i))) {
                 return false;
             }
         }
@@ -152,7 +157,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         //当前队列剩余元素数,(<=size)，想法来自deepseek
         private int remain;
 
-        public ArrayDequeIterator() {
+        //style check判错，说下方构造函数不需要public
+        ArrayDequeIterator() {
             pos = head;
             remain = size;
         }

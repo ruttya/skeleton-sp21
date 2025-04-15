@@ -18,7 +18,10 @@ public class MaxLinkedListDeque<T> extends LinkedListDeque<T> {
     }
 
     public T max(Comparator<T> c) {
-        //returns the maximum element in the deque as governed by the parameter Comparator c. If the MaxArrayDeque is empty, simply return null.
+        /* returns the maximum element in the deque as
+        governed by the parameter Comparator c.
+        If the MaxArrayDeque is empty, simply return null.
+         */
         return null;
     }
 

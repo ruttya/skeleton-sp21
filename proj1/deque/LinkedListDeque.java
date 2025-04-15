@@ -116,7 +116,8 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     private class LinkedListDequeIterator implements Iterator<T> {
         private Node<T> pos;
 
-        public LinkedListDequeIterator() {
+        //style check判错，说下方构造函数不需要public
+        LinkedListDequeIterator() {
             pos = sentinel.next;
         }
 
@@ -138,7 +139,8 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         if (o == null) {
             return false;
         }
-        if ((o instanceof Deque) == false) {
+        //style check 判错，使用deepseek简化版本
+        if (!(o instanceof LinkedListDeque)) {
             return false;
         }
         LinkedListDeque<T> os = (LinkedListDeque<T>) o;
@@ -148,7 +150,8 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         Node<T> n1 = sentinel.next;
         Node<T> n2 = os.sentinel.next;
         for (int i = 0; i < size; i++) {
-            if (n1.item.equals(n2.item) == false) {
+            //style check 判错，使用deepseek简化版本
+            if (!n1.item.equals(n2.item)) {
                 return false;
             }
             n1 = n1.next;

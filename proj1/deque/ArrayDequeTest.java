@@ -262,6 +262,12 @@ public class ArrayDequeTest {
         student.addFirst(3);
         assertEquals("1st item of student should be 3", 3, (int) student.get(0));
         assertEquals("should be 1", 1, (int) student.removeLast());
+
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        ad1.addFirst(0); //0
+        ad1.addFirst(1); //1 0
+        assertEquals("should be 0", 0, (int) ad1.removeLast()); //1
+        assertEquals("should be 1", 1, (int) ad1.removeLast()); //null
     }
 
     /*d004) AD-basic: Random addLast/removeLast/isEmpty tests. (0/8.483)*/

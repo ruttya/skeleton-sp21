@@ -4,16 +4,8 @@
  * @author ruttya
  */
 public class Collatz {
-
-    /**
-     * Buggy implementation of nextNumber!
-     */
     public static int nextNumber(int n) {
-        if (n % 2 == 0) {
-            return n / 2;
-        } else {
-            return n * 3 + 1;
-        }
+        return n % 2 == 0 ? n / 2 : 3 * n + 1;
     }
 
     public static void main(String[] args) {
@@ -23,7 +15,5 @@ public class Collatz {
             n = nextNumber(n);
             System.out.print(n + " ");
         }
-        System.out.println();
     }
 }
-

@@ -4,7 +4,6 @@
  * @author ruttya
  */
 public class Collatz {
-
     /**
      * Buggy implementation of nextNumber!
      */

@@ -16,36 +16,34 @@ public class GuitarHero {
     public static void main(String[] args) {
         /* create 37 guitar strings */
         GuitarString[] strings = new GuitarString[NUM];
-        double[] vol = new double[NUM]; //音量，用来控制响否
 
+        //创建所有琴弦
         for (int i = 0; i < NUM; i++) {
             strings[i] = new GuitarString(CONCERT_A * Math.pow(2, (i - 24) / 12.0));
-            vol[i] = 0.0;
         }
-        //TODO:此行以下要重新考虑
-        double sample = 0;
-        int index = -1;
-        while (true) {
-            char key = 'a';
-            /* check if the user has typed a key; if so, process it */
-            if (StdDraw.hasNextKeyTyped()) {
-                key = StdDraw.nextKeyTyped();
-                index = KEYBOARD.indexOf(key);
-                if (index == -1) {
-                    continue;
-                }
-                strings[index].pluck();
-            }
 
+        while (true) {
+            /* check if the user has typed a key; if so, process it */
+            /* 按过的键变成新的白噪声状态 */
+            if (StdDraw.hasNextKeyTyped()) {
+                char key = StdDraw.nextKeyTyped();
+                int index = KEYBOARD.indexOf(key);
+                if (index != -1) {
+                    strings[index].pluck();
+                }
+            }
             /* compute the superposition of samples */
             /* 计算样本的叠加结果
-             * 某次循环是a键第1 sample和c键第2 sample的叠加 */
+             * 因为循环末尾会tic()，所以所有位置叠加一遍，涉及以下三种情况：
+             *  1.此次循环刚按键，琴弦刚pluck()
+             *  2.前几次循环曾按过键，琴弦不停play(sample)-tic()中
+             *  3.从未按过的键，值==0，不停play(sample)-tic()但不会出声
+             * 之前想复杂了，循环次数和按键时机没有任何关系，循环速度>>按键速度，因此只考虑声音不停推进即可。
+             * 直接照抄GuitarHeroLite.java其实够了 */
+            double sample = 0;
             for (int i = 0; i < strings.length; i++) {
-                if (vol[i] > 0.0) {
-                    strings[i].tic();
-                }
+                sample += strings[i].sample();
             }
-            sample += strings[index].sample();
             /* play the sample on standard audio */
             StdAudio.play(sample);
             /* advance the simulation of each guitar string by one step */

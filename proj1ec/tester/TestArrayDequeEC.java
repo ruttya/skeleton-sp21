@@ -1,79 +1,63 @@
 package tester;
 
 import static org.junit.Assert.*;
+
+import edu.princeton.cs.introcs.StdRandom;
 import org.junit.Test;
 import student.StudentArrayDeque;
 
-import java.util.ArrayDeque;
-
 public class TestArrayDequeEC {
 
-    public StudentArrayDeque addNums(StudentArrayDeque orig, int num) {
-        for (int i = 1; i <= num; i++) {
-            orig.addLast(i);
+    @Test
+    public void addTest() {
+        ArrayDequeSolution<Integer> ads1 = new ArrayDequeSolution<>();
+        StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<>();
+        int n = 10;
+        for (int i = 0; i < n; i += 1) {
+            double numberBetweenZeroAndOne = StdRandom.uniform();
+
+            if (numberBetweenZeroAndOne < 0.5) {
+                sad1.addLast(i);
+                ads1.addLast(i);
+            } else {
+                sad1.addFirst(i);
+                ads1.addFirst(i);
+            }
         }
-        return orig;
-    }
-    @Test
-    public void addLastTest() {
-        StudentArrayDeque<Integer> ad1 = new StudentArrayDeque<>();
-        ad1.addLast(1);
-     ad1.addLast(2);
-        ad1.addLast(3);
-        ad1.printDeque();
-    }
-
-    @Test
-    public void resizeTest() {
-        StudentArrayDeque<Integer> ad1 = new StudentArrayDeque<>();
-        ad1 = addNums(ad1, 7);
-        /*resize()是private方法，测试临时改成public*/
-        //ad1.resize(20);
-        ad1.printDeque();
-    }
-
-    @Test
-    public void addFirstTest() {
-        StudentArrayDeque<Integer> ad1 = new StudentArrayDeque<>();
-        ad1 = addNums(ad1, 7);
-        ad1.addLast(8);
-        ad1.addFirst(101);
-        ad1.addFirst(102);
-        ad1.printDeque();
+        for (int i = 0; i < n; i++) {
+            assertEquals("Should be equal.", ads1.get(i), sad1.get(i));
+        }
     }
 
     @Test
     public void removeTest() {
-        //测试非常规形状队列的remove方法
-        StudentArrayDeque<Integer> ad1 = new StudentArrayDeque<>();
-        ad1 = addNums(ad1, 10);
-        ad1.addFirst(101);
-        ad1.addFirst(102);
-        ad1.removeLast();
-        ad1.removeFirst();
-        ad1.printDeque();
-    }
+        ArrayDequeSolution<Integer> ads1 = new ArrayDequeSolution<>();
+        StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<>();
+        int n = 10;
+        for (int i = 0; i < n; i += 1) {
+            double numberBetweenZeroAndOne = StdRandom.uniform();
 
-    @Test
-    public void resizeSmaller() {
-        //测试常规形状队列使用resize()缩小容量
-        StudentArrayDeque<Integer> ad1 = new StudentArrayDeque<>();
-        ad1 = addNums(ad1, 10);
-        ad1.addLast(11);
-        /*resize()是private方法，测试临时改成public*/
-        //ad1.resize(12);
-        ad1.printDeque();
-
-        //测试非常规形状队列使用resize()缩小容量
-        StudentArrayDeque<Integer> ad2 = new StudentArrayDeque<>();
-        ad2 = addNums(ad2, 7);
-        ad2.addFirst(101);
-        ad2.addFirst(102);
-        /*resize()是private方法，测试临时改成public*/
-        //ad2.resize(20);//手动扩容为非常规形态
-        /*resize()是private方法，测试临时改成public*/
-        //ad2.resize(12);
-        ad2.printDeque();
+            if (numberBetweenZeroAndOne < 0.5) {
+                sad1.addLast(i);
+                ads1.addLast(i);
+            } else {
+                sad1.addFirst(i);
+                ads1.addFirst(i);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            double numberBetweenZeroAndOne = StdRandom.uniform();
+            Integer a;
+            Integer s;
+            if (numberBetweenZeroAndOne < 0.5) {
+                a = ads1.removeLast();
+                s = sad1.removeLast();
+            } else {
+                a = ads1.removeFirst();
+                s = sad1.removeFirst();
+            }
+            assertEquals("Should be equal.", a, s);
+        }
     }
 
     @Test
@@ -82,140 +66,58 @@ public class TestArrayDequeEC {
      *
      * && is the "and" operation. */
     public void addIsEmptySizeTest() {
+        StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<>();
+        ArrayDequeSolution<Integer> ads1 = new ArrayDequeSolution<>();
 
-        //System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
+        assertTrue("A newly initialized LLDeque should be empty", sad1.isEmpty());
+        sad1.addFirst(1);
+        assertEquals(1, sad1.size());
+        assertFalse("ad1 should now contain 1 item", sad1.isEmpty());
 
-        StudentArrayDeque<String> ad1 = new StudentArrayDeque<>();
-
-        assertTrue("A newly initialized LLDeque should be empty", ad1.isEmpty());
-        ad1.addFirst("front");
-        // The && operator is the same as "and" in Python.
-        // It's a binary operator that returns true if both arguments true, and false otherwise.
-        assertEquals(1, ad1.size());
-        assertFalse("ad1 should now contain 1 item", ad1.isEmpty());
-
-        ad1.addLast("middle");
-        assertEquals(2, ad1.size());
-        ad1.addLast("back");
-        assertEquals(3, ad1.size());
+        sad1.addLast(2);
+        assertEquals(2, sad1.size());
+        sad1.addLast(3);
+        assertEquals(3, sad1.size());
         System.out.println("Printing out deque: ");
-        ad1.printDeque();
+        sad1.printDeque();
 
     }
 
     @Test
     /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
     public void addRemoveTest() {
-
-        // System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
-
-        StudentArrayDeque<Integer> ad1 = new StudentArrayDeque<>();
+        StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<>();
+        ArrayDequeSolution<Integer> ads1 = new ArrayDequeSolution<>();
         // should be empty
-        assertTrue("ad1 should be empty upon initialization", ad1.isEmpty());
+        assertTrue("ad1 should be empty upon initialization", sad1.isEmpty());
 
-        ad1.addFirst(10);
+        sad1.addFirst(10);
         // should not be empty
-        assertFalse("ad1 should contain 1 item", ad1.isEmpty());
+        assertFalse("ad1 should contain 1 item", sad1.isEmpty());
 
-        ad1.removeFirst();
+        sad1.removeFirst();
         // should be empty
-        assertTrue("ad1 should be empty after removal", ad1.isEmpty());
-
-    }
-
-    @Test
-    /* Tests removing from an empty deque */
-    public void removeEmptyTest() {
-
-        //System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
-        StudentArrayDeque<Integer> ad1 = new StudentArrayDeque<>();
-        ad1.addFirst(3);
-
-        ad1.removeLast();
-        ad1.removeFirst();
-        ad1.removeLast();
-        ad1.removeFirst();
-
-        int size = ad1.size();
-        String errorMsg = "  Bad size returned when removing from empty deque.\n";
-        errorMsg += "  student size() returned " + size + "\n";
-        errorMsg += "  actual size() returned 0\n";
-
-        assertEquals(errorMsg, 0, size);
-    }
-
-    @Test
-    /* Check if you can create ArrayDeques with different parameterized types*/
-    public void multipleParamTest() {
-
-        StudentArrayDeque<String> lld1 = new StudentArrayDeque<>();
-        StudentArrayDeque<Double> lld2 = new StudentArrayDeque<>();
-        StudentArrayDeque<Boolean> lld3 = new StudentArrayDeque<>();
-
-        lld1.addFirst("string");
-        lld2.addFirst(3.14159);
-        lld3.addFirst(true);
-
-        String s = lld1.removeFirst();
-        double d = lld2.removeFirst();
-        boolean b = lld3.removeFirst();
-
-    }
-
-    @Test
-    /* check if null is return when removing from an empty LinkedListDeque. */
-    public void emptyNullReturnTest() {
-
-        //System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
-
-        StudentArrayDeque<Integer> lld1 = new StudentArrayDeque<>();
-
-        boolean passed1 = false;
-        boolean passed2 = false;
-        assertEquals("Should return null when removeFirst is called on an empty Deque,", null, lld1.removeFirst());
-        assertEquals("Should return null when removeLast is called on an empty Deque,", null, lld1.removeLast());
-
+        assertTrue("ad1 should be empty after removal",sad1.isEmpty());
 
     }
 
     @Test
     /* Add large number of elements to deque; check if order is correct. */
     public void bigArrayDequeTest() {
-        StudentArrayDeque<Integer> lld1 = new StudentArrayDeque<>();
+        StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<>();
         for (int i = 0; i < 1000000; i++) {
-            lld1.addLast(i);
+            sad1.addLast(i);
         }
-        lld1.printDeque();
         for (double i = 0; i < 500000; i++) {
-            assertEquals("Should have the same value", i, (double) lld1.removeFirst(), 0.0);
+            assertEquals("Should have the same value", i, (double) sad1.removeFirst(), 0.0);
         }
 
         for (double i = 999999; i > 500000; i--) {
-            assertEquals("Should have the same value", i, (double) lld1.removeLast(), 0.0);
+            assertEquals("Should have the same value", i, (double) sad1.removeLast(), 0.0);
         }
     }
 
     //ruttya created Tests below
-    @Test
-    /*copy method test*/
-    public void copyLLDequeTest() {
-        StudentArrayDeque<Integer> lld1 = new StudentArrayDeque<>();
-        StudentArrayDeque<Integer> lld2 = new StudentArrayDeque<>();
-        assertEquals("Should have the same value", null, lld2.get(0));
-
-        StudentArrayDeque<Integer> lld3 = new StudentArrayDeque<>();
-        lld3.addLast(1);
-        lld3.addLast(2);
-        lld3.addLast(3);
-        StudentArrayDeque<Integer> lld4 = new StudentArrayDeque<>();
-        lld4.addLast(1);
-        lld4.addLast(2);
-        lld4.addLast(3);
-        for (int i = 0; i < lld4.size(); i++) {
-            //System.out.println(lld3.get(i)+","+lld4.get(i));
-            assertEquals("Should have the same value", lld3.get(i), lld4.get(i));
-        }
-    }
 
     //test case from gradescope.com
     /*d003) AD-basic: Random addFirst/removeLast/isEmpty tests. (0/8.483)

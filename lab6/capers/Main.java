@@ -8,7 +8,7 @@ import static capers.CapersRepository.makeDog;
 import static capers.Utils.*;
 
 /** Canine Capers: A Gitlet Prelude.
- * @author TODO
+ * @author ruttya
 */
 public class Main {
     /**

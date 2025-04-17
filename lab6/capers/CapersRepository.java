@@ -26,7 +26,7 @@ public class CapersRepository {
     /**
      * Main metadata folder.
      */
-    static final File CAPERS_FOLDER = join(CWD, "capers",".capers").toPath().toFile();
+    static final File CAPERS_FOLDER = join(CWD, ".capers").toPath().toFile();
 
     /**
      * Does required filesystem operations to allow for persistence.

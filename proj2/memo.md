@@ -25,9 +25,16 @@
   - Incorporating trees into commits and not dealing with subdirectories (so there will be one “flat” directory of plain files for each repository).
   - Limiting ourselves to merges that reference two parents (in real Git, there can be any number of parents.)
   Having our metadata consist only of a timestamp and log message. A commit, therefore, will consist of a log message, timestamp, a mapping of file names to blob references, a parent reference, and (for merges) a second parent reference.
-
+- command
+  - `init`
+  - `add`
+  - `commit`
+  - `checkout -- [file name]`
+  - `checkout [commit id] -- [file name]`
+  - `log`
 # from lecture
-
+- 给的`.py`test也许有点问题，`lab6`并没有出现像样的界面
+- git bash下`make`等于编译所有`.java`文件，文件注释中有中文会导致报错。。。
 # 进度
 - apr17，lab6花了一整个白天（晚睡摸鱼版，蚌
-- 
+- 本质上我没彻底搞明白git本身的步骤（我觉得是英语不精，实现应该还好，没有边缘问题

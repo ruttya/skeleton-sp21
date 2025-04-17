@@ -1,6 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.io.IOException;
+
 import static gitlet.Utils.*;
 
 // TODO: any imports you need here
@@ -9,7 +11,7 @@ import static gitlet.Utils.*;
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author ruttya
  */
 public class Repository {
     /**
@@ -26,4 +28,21 @@ public class Repository {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
     /* TODO: fill in the rest of this class. */
+    public static void initial(){
+        if (!GITLET_DIR.exists()){
+            GITLET_DIR.mkdir();
+        }else {
+            message("A Gitlet version-control system already exists in the current directory.");
+        }
+    }
+    //TODO: move file to somewhere in /.gilet
+    public static void addFile(String fileName){
+        File f=join(GITLET_DIR,fileName);
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }

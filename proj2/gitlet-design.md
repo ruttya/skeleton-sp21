@@ -1,6 +1,6 @@
 # Gitlet Design Document
 
-**Name**:
+**ruttya**:
 
 ## Classes and Data Structures
 

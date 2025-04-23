@@ -43,7 +43,7 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V>{
         if (node==null){
             return false;
         }
-        if (node.key==key){
+        if (key.equals(node.key)){
             return true;
         }
         return containsKey(root.left,key) || containsKey(root.right,key);
@@ -57,14 +57,16 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V>{
         if (node==null){
             return null;
         }
-        if (node.key==key){
-            return node.val;
-        }
-        if (key.compareTo (node.key)>0){
+        System.out.println("node.key="+node.key+", node.val="+node.val);
+        int cmp=key.compareTo(node.key);
+        System.out.println("key.compareTo(node.key) in get()="+cmp);
+        if (cmp>0){
             return get(root.right,key);
         }
-        else{
+        else if (cmp<0){
             return get(root.left,key);
+        }else{
+            return node.val;
         }
     }
 
@@ -75,22 +77,24 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V>{
 
     @Override
     public void put(K key, V value) {
-        put(root,key,value);
+        root=put(root,key,value);
     }
-    private void put(BSTNode node,K key,V value){
+    private BSTNode put(BSTNode node,K key,V value){
+        //if (containsKey(key))
         if (node==null){
-            node=new BSTNode(key,value);
             size++;
+            return new BSTNode(key,value);
         }
-        if (key.compareTo (node.key)>0){
-            put(node.right,key,value);
+        else if (key.compareTo (node.key)>0){
+            node.right=put(node.right,key,value);
         }
-        if (key.compareTo (node.key)<0) {
-            put(node.left,key,value);
+        else if (key.compareTo (node.key)<0) {
+            node.left=put(node.left,key,value);
         }
         else {
             node.val=value;
         }
+        return node;
     }
 
     @Override

@@ -20,10 +20,12 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V>{
         root=null;
         size=0;
     }
+    /* deleted by gradescope api checker
     public BSTMap(BSTNode node){
         root=node;
         size=1;
     }
+     */
     /*
      * implement all of the methods given in Map61B except for `remove`, `iterator` and `keySet` */
 
@@ -36,7 +38,23 @@ public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V>{
 
     @Override
     public boolean containsKey(K key) {
-        return (get(key)!=null);
+        if (key==null){
+            throw new UnsupportedOperationException();
+        }
+        BSTNode cur=root;
+        while (cur!=null){
+            int cmp=key.compareTo(cur.key);
+            if (cmp==0){
+                return true;
+            }
+            else if (cmp<0){
+                cur=cur.left;
+            }
+            else {
+                cur=cur.right;
+            }
+        }
+        return false;
     }
 
     @Override

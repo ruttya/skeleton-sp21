@@ -10,7 +10,7 @@ import java.util.*;
  *
  * @author ruttya
  */
-public class MyHashMap<K, V> implements Map61B<K, V>, Iterable<K> {
+public class MyHashMap<K, V> implements Map61B<K, V> {
     private static final int INITIAL_SIZE = 16; //初始桶数量
     private static final double LOAD_FACTOR = 0.75; //负载因子：元素数量(N) / 桶数量(M)达到此阈值时触发扩容
 
@@ -227,11 +227,11 @@ public class MyHashMap<K, V> implements Map61B<K, V>, Iterable<K> {
 
     @Override
     public Iterator<K> iterator() {
-        return new hashmapIterator();
+        return new HashmapIterator();
     }
 
     //以下全部借鉴。。。
-    private class hashmapIterator implements Iterator<K> {
+    private class HashmapIterator implements Iterator<K> {
         private Iterator<Collection<Node>> bucketIter = Arrays.asList(buckets).iterator();
         private Iterator<Node> nodeIter = Collections.emptyIterator();
 

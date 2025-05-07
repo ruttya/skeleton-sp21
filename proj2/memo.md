@@ -5,7 +5,7 @@
 - ```java xx```执行`xx.class`文件，`xx`=类名
 - 通常执行`Main`
 - 执行包中的文件时，要在包的父目录下执行
-    ```
+  ```
   cd ..              #dir=lab6/
     java capers.Main
   ```
@@ -36,8 +36,7 @@
   - `log`
 # from lecture
 - 给的`.py`test也许有点问题，`lab6`并没有出现像样的界面
-- git bash下`make`等于编译所有`.java`文件，文件注释中有中文会导致报错。。。
-- `checkout v3`假设当前处于v5，则清空v5，然后将v3所有文件复制到v5
+- `checkout v3`假设当前处于v5，则清空v5，然后将v3所有文件复制到v5(实际是复制所有文件的版本号)
 - 关于commit
   - 每个repo应当有个commit列表，其中每个commit又包含每个文件对应的版本号，执行`commit`时，新增/有修改的文件/目录将版本号标记为当前commit号，没改动的文件/目录继承上一个commit里该文件的版本号
   - ![pic1](./pic/1.JPG)
@@ -46,9 +45,18 @@
   - 使用时间+日期作为版本号，以解决不同终端提交的冲突问题，实际会使用sha1-hash后的名字
   - ![pic2](./pic/2.JPG)
   - ![pic3](./pic/3.JPG)
-  - commit元素包含的内容
+  - commit元素包含的内容，以下内容作为`Commit.java`中的字段
   - ![pic4](./pic/4.JPG)
-- 
+  - 关于commit id
+  - ![pic5](./pic/5.JPG)
+# memos
+- git bash下`make`等于编译所有`.java`文件，文件注释中有中文会导致报错
+- 解决命令行时的中文乱码报错问题：
+  - bash:`set JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8`
+  - IDE设置：IntelliJ: File > Settings > Editor > File Encodings
+- 生成文档bash:`javadoc MyClass.java`
+- 生成包文档bash:`javadoc -d docs com.mypackage`
 # 进度
 - apr17，lab6花了一整个白天（晚睡摸鱼版，蚌
 - 本质上我没彻底搞明白git本身的步骤（我觉得是英语不精，实现应该还好，没有边缘问题
+- 先解决Commit->Repository的结构问题，然后根据git命令加入method

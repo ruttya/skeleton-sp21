@@ -1,7 +1,7 @@
 package gitlet;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
+ *  @author ruttya
  */
 public class Main {
 
@@ -21,9 +21,30 @@ public class Main {
             case "add":
                 validateNumArgs("add", args, 2);
                 Repository.addFile(args[1]);
-                // TODO: handle the `add [filename]` command
                 break;
-            // TODO: FILL THE REST IN
+            case "commit":
+                break;
+            case "rm":
+                break;
+            case "log":
+                break;
+            case "global-log":
+                break;
+            case "find":
+                break;
+            case "status":
+                break;
+            case "checkout":
+                break;
+            case "branch":
+                break;
+            case "rm-branch":
+                break;
+            case "reset":
+                break;
+            case "merge":
+                break;
+
         }
     }
     /**

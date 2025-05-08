@@ -49,6 +49,8 @@
   - ![pic4](./pic/4.JPG)
   - 关于commit id
   - ![pic5](./pic/5.JPG)
+- TA的图示
+- ![pic6](./pic/6.JPG)
 # memos
 - git bash下`make`等于编译所有`.java`文件，文件注释中有中文会导致报错
 - 解决命令行时的中文乱码报错问题：
@@ -56,7 +58,9 @@
   - IDE设置：IntelliJ: File > Settings > Editor > File Encodings
 - 生成文档bash:`javadoc MyClass.java`
 - 生成包文档bash:`javadoc -d docs com.mypackage`
+- `.gitlet/`和`gitlet/`是同级目录
+- 和`lab6`对比，`Dog`=`Commit`,`CapersRepository`=`Repository`
 # 进度
 - apr17，lab6花了一整个白天（晚睡摸鱼版，蚌
 - 本质上我没彻底搞明白git本身的步骤（我觉得是英语不精，实现应该还好，没有边缘问题
-- 先解决Commit->Repository的结构问题，然后根据git命令加入method
+- may7,似乎要先解决Commit->Repository的结构问题，然后根据git命令加入method

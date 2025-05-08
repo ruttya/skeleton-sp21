@@ -1,12 +1,18 @@
 package gitlet;
 
-/** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author ruttya
+import org.checkerframework.checker.units.qual.C;
+
+/**
+ * Driver class for Gitlet, a subset of the Git version-control system.
+ *
+ * @author ruttya
  */
 public class Main {
 
-    /** Usage: java gitlet.Main ARGS, where ARGS contains
-     *  <COMMAND> <OPERAND1> <OPERAND2> ... 
+    /**
+     * Usage: java gitlet.Main ARGS, where ARGS contains
+     * <COMMAND> <OPERAND1> <OPERAND2> ...
+     * java gitlet.Main add hello.txt
      */
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -14,15 +20,18 @@ public class Main {
             System.exit(-1);
         }
         String firstArg = args[0];
-        switch(firstArg) {
+        Repository repo = new Repository();
+        switch (firstArg) {
             case "init":
-                Repository.initial();
+                repo.initial();
                 break;
             case "add":
                 validateNumArgs("add", args, 2);
-                Repository.addFile(args[1]);
+                repo.addFile(args[1]);
                 break;
             case "commit":
+                validateNumArgs("commit",args,2);
+                repo.commit(args[1]);
                 break;
             case "rm":
                 break;
@@ -47,6 +56,7 @@ public class Main {
 
         }
     }
+
     /**
      * Checks the number of arguments versus the expected number,
      * throws a RuntimeException if they do not match.
@@ -61,4 +71,6 @@ public class Main {
                     String.format("Invalid number of arguments for: %s.", cmd));
         }
     }
+
+
 }

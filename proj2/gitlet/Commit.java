@@ -1,58 +1,50 @@
 package gitlet;
 
-
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Dictionary;
 
-import static gitlet.Utils.sha1;
+import static gitlet.Repository.GITLET_DIR;
+import static gitlet.Utils.*;
 
 /**
  * Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
+ * as Dog.java in lab6
+ * does at a high level.
  *
  * @author ruttya
  */
 public class Commit implements Serializable {
-    /**
-     * List all instance variables of the Commit class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided one example for `message`.
-     */
 
-    /**
-     * The message of this Commit.
-     */
+    static final File COMMIT_FOLDER = join(GITLET_DIR, ".commits").toPath().toFile();
+
     private String message;
     private String author;
     private String date;
     private Dictionary<File, String> files; //<file,version> version=sha1-hash
-    private String parentID; //上一个commitID，只保存id(40 length String(来自Util.sha1))
+    private Commit parent; //上一个commit
 
     //将以上所有信息hash后作为commitID
-    public Commit(String author, String message, Dictionary<File, String> files, String date, String parentID) {
-        this.author = author;
+    public Commit(String message, Commit parent) {
         this.message = message;
-        this.files = files;
-        this.date = date;
-        this.parentID = parentID;
+        this.parent = parent;
+        this.date = createDate();
     }
 
     public String getCommitID() {
-        return sha1(author, date, message, files, parentID);
+        // commitID(40 length String(来自Util.sha1))
+        return sha1(author, date, message, files, parent);
+    }
+
+    public Commit getParent() {
+        return this.parent;
     }
 
     //TODO: 如果不单独保存ID则需要一个根据ID查找某commit的方法
-    public Commit createCommit() {
-        Commit res = new Commit("","",null,"",null);
-        res.date = getNow();
-        res.parentID = getCommitID();
-        return res;
-    }
-    private String getNow(){
+    private String createDate() {
         // 获取当前时间
         Date now = new Date();
         Formatter formatter = new Formatter();
@@ -62,8 +54,19 @@ public class Commit implements Serializable {
         formatter.close();
         return formattedDate;
     }
-    public void save() {
 
+    // 保存，以id为文件名，文件内容是commit内容（commit作为一个obj）
+    public void save() {
+        File commi = join(COMMIT_FOLDER, getCommitID()).toPath().toFile();
+        try {
+            commi.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // write...() is an overwrite method,
+        // so create a string variable if make append
+        writeObject(commi, this);
     }
     /* TODO: fill in the rest of this class. */
+
 }

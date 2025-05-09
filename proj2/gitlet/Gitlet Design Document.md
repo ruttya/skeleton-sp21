@@ -5,7 +5,19 @@
 
 ## 1. Classes and Data Structures
 - Include here any class definitions. For each class list the instance variables and static variables (if any). Include a brief description of each variable and its purpose in the class. Your explanations in this section should be as concise as possible. Leave the full explanation to the following sections. You may cut this section short if you find your document is too wordy.
-
+```java
+/** directory construction: 
+     *   .gitlet
+     *      |--objects
+     *      |     |--commit and blob
+     *      |--refs 存储所有分支的末端信息，在heads文件夹内存有多个文件，每个文件的名字即为分支名字
+     *      |    |--heads
+     *      |         |--master 文件内容是末端Commit的40位ID
+     *      |--HEAD 文件内容是当前指向的Commit的ID
+     *      |--addstage
+     *      |--removestage
+     */
+```
 ---
 
 ### Main

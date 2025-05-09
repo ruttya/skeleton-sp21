@@ -2,6 +2,10 @@ package gitlet;
 
 import org.checkerframework.checker.units.qual.C;
 
+import java.io.IOException;
+
+import static gitlet.Utils.message;
+
 /**
  * Driver class for Gitlet, a subset of the Git version-control system.
  *
@@ -14,7 +18,7 @@ public class Main {
      * <COMMAND> <OPERAND1> <OPERAND2> ...
      * java gitlet.Main add hello.txt
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length == 0) {
             System.out.println("Must have at least one argument");
             System.exit(-1);
@@ -27,15 +31,24 @@ public class Main {
                 break;
             case "add":
                 validateNumArgs("add", args, 2);
+                // args[1]: .txt file name
                 repo.addFile(args[1]);
                 break;
             case "commit":
-                validateNumArgs("commit",args,2);
+                if (args.length<2){
+                    message("Please enter a commit message.");
+                    break;
+                }
+                // args[1]: message
                 repo.commit(args[1]);
                 break;
             case "rm":
+                validateNumArgs("rm", args, 2);
+                // args[1]: .txt file name
+                repo.rm(args[1]);
                 break;
             case "log":
+                repo.log();
                 break;
             case "global-log":
                 break;

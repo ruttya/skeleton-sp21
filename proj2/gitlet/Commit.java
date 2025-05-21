@@ -1,141 +1,53 @@
 package gitlet;
 
+// TODO: any imports you need here
+
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Formatter;
-import java.util.Map;
+import java.time.Instant;
+import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Dictionary;
 
-import static gitlet.Blob.BLOB_FOLDER;
-import static gitlet.Repository.GITLET_DIR;
-import static gitlet.Utils.*;
+import static gitlet.Utils.sha1;
 
-/**
- * Represents a gitlet commit object.
- * as Dog.java in lab6
- * does at a high level.
+/** Represents a gitlet commit object.
+ *  TODO: It's a good idea to give a description here of what else this Class
+ *  does at a high level.
  *
- * @author ruttya
+ *  @author TODO
  */
 public class Commit implements Serializable {
+    /**
+     * TODO: add instance variables here.
+     *
+     * List all instance variables of the Commit class here with a useful
+     * comment above them describing what that variable represents and how that
+     * variable is used. We've provided one example for `message`.
+     */
 
-    static final File COMMIT_FOLDER = join(GITLET_DIR, "objects","commit");
-
+    /** The message of this Commit. */
     private String message;
     private String author;
     private String date;
-    private Map<File, String> files; //<file,version> version=sha1-hash
-    private String parent; //上一个commitID
-
-    //将以上所有信息hash后作为commitID
-    public Commit(String message, String parent) {
-        this.message = message;
-        this.parent = parent;
-        this.date = createDate();
+    private Dictionary<File,String> files; //<file,version> version=sha1-hash
+    private String parentID; //上一个commitID，只保存id(40 length String(来自Util.sha1))
+    //将以上所有信息hash后作为commitID, initial commit's parent is null
+    public Commit(String msg){
+        message=msg;
+        date= Instant.now().toString();
+        parentID=null;
     }
-
     public String getCommitID() {
-        // commitID(40 length String(来自Util.sha1))
-        return sha1(author, date, message, files, parent);
+        return sha1(message, author, date, files, parentID);
     }
+    //TODO: 如果不单独保存ID则需要一个根据ID查找某commit的方法
+    public Commit createCommit(){
+        Commit res=new Commit("");
+        res.parentID=getCommitID();
+        return res;
+    }
+    public void save(){
 
-    public Commit getParent() {
-        return getCommit(this.parent);
     }
-
-    public String getParentID(){
-        return this.parent;
-    }
-
-    public String getMessage(){
-        return this.message;
-    }
-
-    public String getDate(){
-        return this.date;
-    }
-
-    public void setDate(String date){
-        this.date=date;
-    }
-
-    private String createDate() {
-        // 获取当前时间戳
-        Date now = new Date();
-        Formatter formatter = new Formatter();
-        formatter.format("%ta %tb %td %tT %tY %tz",
-                now, now, now, now, now, now);
-        String formattedDate = formatter.toString();
-        formatter.close();
-        return formattedDate;
-    }
-
-    // 保存，以id为文件名，文件内容是commit内容（commit作为一个obj）
-    public void save() {
-        File commi = join(COMMIT_FOLDER, getCommitID()).toPath().toFile();
-        try {
-            commi.createNewFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        // write...() is an overwrite method,
-        // so create a string variable if make append
-        writeObject(commi, this);
-    }
-
-    /**
-     * 在当前commit基础上创建新的commit并返回
-     * @return
-     * @throws IOException
-     */
-    public Commit createCommit(String message) throws IOException {
-        boolean changed=false;
-        Commit res=new Commit(message,this.getCommitID());
-        // 遍历files中的key(文件名)，将文件内容hash后作为blob的文件名，
-        // 如果blob文件不存在则创建
-        // 然后将{content文件名:blob文件名}添加到新commit的files<,>中
-        // 如果该blob已存在则直接添加到新commit
-        for (File file:files.keySet()){
-            Blob b=new Blob(readContents(file));
-            File blob=join(BLOB_FOLDER,sha1(readContentsAsString(file)));
-            if (!blob.exists()){
-                b.saveBlob();
-                changed=true;
-            }
-            res.files.put(file,sha1(readContentsAsString(file)));
-        }
-        if (changed){
-            return res;
-        }
-        else {
-            message("No changes added to the commit.");
-            return null;
-        }
-    }
-
-    public void addFile(String filename){
-        File file=join(GITLET_DIR,filename).toPath().toFile();
-        files.put(file,"");
-    }
-
-    public void rmFile(String filename){
-        File file=join(GITLET_DIR,filename).toPath().toFile();
-        if (files.containsKey(file)){
-            files.remove(file);
-        }
-        else {
-            message("No reason to remove the file.");
-        }
-    }
-
-    public void printCommit(){
-        System.out.println("===\ncommit "+getCommitID()+"\nDate: "+date+"\n"+message+"\n\n");
-    }
-
-    public static Commit getCommit(String id){
-        File f=join(COMMIT_FOLDER,id).toPath().toFile();
-        Commit item=readObject(f, Commit.class);
-        return item;
-    }
+    /* TODO: fill in the rest of this class. */
 }

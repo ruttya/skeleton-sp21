@@ -1,26 +1,54 @@
 package gitlet;
 
-// TODO: any imports you need here
-
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.io.File;
+import java.util.*;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author ruttya
  */
 public class Commit {
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Commit class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided one example for `message`.
-     */
 
-    /** The message of this Commit. */
     private String message;
+    private String author;
+    private String date;
+    private String parent;
+    private Map<File,String> files;
 
-    /* TODO: fill in the rest of this class. */
+    public Commit(String message){
+        this.message=message;
+        this.date=createDate();
+        this.parent=null;
+        this.files=new HashMap<>();
+    }
+
+    public Commit createCommit(String message){
+        Commit res=new Commit(message);
+        res.setParent(this.getID());
+        return res;
+    }
+
+    private void setParent(String id){
+        this.parent=id;
+    }
+
+    public String getID(){
+        return Utils.sha1(this.author,this.date,this.message,this.parent);
+    }
+
+    private String createDate(){
+        // 获取当前时间
+        Date now = new Date();
+        // 创建Formatter对象
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.US);
+        // 格式化日期
+        formatter.format("%ta %tb %td %tT %tY %tz",
+                now, now, now, now, now, now);
+        // 关闭Formatter
+        formatter.close();
+        return sb.toString();
+    }
+
 }

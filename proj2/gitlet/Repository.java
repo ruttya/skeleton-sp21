@@ -173,6 +173,10 @@ public class Repository {
         String ID = readContentsAsString(join(CWD, path));
         return readObject(join(OBJS_DIR, ID), Commit.class);
     }
+    private static String getCurrentBranch(){
+        String[] parts = readContentsAsString(HEAD).split("/");
+        return parts[parts.length - 1];
+    }
 
     private static Commit getParent(Commit commit) {
         String parID = commit.getParent();
@@ -274,12 +278,33 @@ public class Repository {
          */
     }
 
-    static void checkout(String str){
-        /**三种情形：
-         * java gitlet.Main checkout -- [file name]
-         * java gitlet.Main checkout [commit id] -- [file name]
-         * java gitlet.Main checkout [branch name]
-         */
+    /** checkout三种情形：
+     * java gitlet.Main checkout -- [file name]
+     * java gitlet.Main checkout [commit id] -- [file name]
+     * java gitlet.Main checkout [branch name]
+     *
+     * 非remote情况下checkout具体修改了哪些内容呢，checkout是commit的一种吗
+     */
+    static void checkoutCommit(String id, String fileName){
+
     }
 
+    public static void checkoutBranch(String branchName) {
+        File branch= join(HEADS_DIR, branchName);
+        if (!branch.exists()) {
+            System.out.println("No such branch exists.");
+            System.exit(0);
+        } else if(branchName.equals(getCurrentBranch())) {
+            System.out.println("No need to checkout the current branch.");
+            System.exit(0);
+        }
+
+        Commit targetCommit = readObject(join(OBJS_DIR, readContentsAsString(branch)), Commit.class);
+        //??reset(targetCommit.getId(), true);
+        writeContents(HEAD, "ref: refs/heads/" + branchName);
+        writeContents(HEAD,branch);
+    }
+
+    public static void checkoutFile(String fileName) {
+    }
 }

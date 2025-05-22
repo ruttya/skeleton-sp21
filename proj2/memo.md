@@ -61,9 +61,12 @@
 - `.gitlet/`和`gitlet/`是同级目录
 - 和`lab6`对比，`Dog`=`Commit`,`CapersRepository`=`Repository`
 - deepseek说blob文件和commit文件都在objects下
+- 如果add之后commit之前文件内容有修改也以add时的状态为准，所以生成blob在`add()`中进行
+- 移出暂存区的操作：将Map<>对应value置为`null`
 # 进度
 - apr17，lab6花了一整个白天（晚睡摸鱼版，蚌
 - 本质上我没彻底搞明白git本身的步骤（我觉得是英语不精，实现应该还好，没有边缘问题
 - may7,似乎要先解决Commit->Repository的结构问题，然后根据git命令加入method
 - may8,各种功能放在`Repo`里，`branch`的结构没思路
 - May22, 继续Repo,date问题解决之后优化一下commit对象的构造
+- May22晚上，前面大概写写还没测试，目前进度checkout开始，明天先把add处理完

@@ -1,13 +1,13 @@
 package gitlet;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 
-/** Represents a gitlet commit object.
- *  does at a high level.
+/**
+ * Represents a gitlet commit object.
+ * does at a high level.
  *
- *  @author ruttya
+ * @author ruttya
  */
 public class Commit implements Serializable {
 
@@ -15,67 +15,59 @@ public class Commit implements Serializable {
     private String author;
     private String date;
     private String parent;
-    private Map<String,String> files; //<content file, blob name>
+    private Map<String, String> files; //<content file, blob name>
 
-    public Commit(String message, String author, String date, String parent, Map<String, String> files) {
+    public Commit(String message, String author, Date date, String parent, Map<String, String> files) {
         this.message = message;
         this.author = author;
-        this.date = date;
+        this.date = createDate(date);
         this.parent = parent;
         this.files = files;
     }
-
-    public Commit(String message){
-        this.message=message;
-        this.date=createDate();
-        this.parent=null;
-        this.files=new HashMap<>();
-    }
-
-    public Commit createCommit(String message){
-        Commit res=new Commit(message);
-        res.setParent(this.getID());
-        return res;
-    }
-
-    public void setParent(String id){
-        this.parent=id;
-    }
-    public void setDate(Date date){
-        // 创建Formatter对象
-        StringBuilder sb = new StringBuilder();
-        Formatter formatter = new Formatter(sb, Locale.US);
-        // 格式化日期
-        formatter.format("%ta %tb %td %tT %tY %tz",
-                date, date, date, date, date, date);
-        // 关闭Formatter
-        formatter.close();
-        this.date=sb.toString();
-    }
-
-    public String getID(){
-        return Utils.sha1(this.author,this.date,this.message,this.parent);
-    }
-
     public void setAuthor(String author) {
         this.author = author;
     }
-    public void setFiles(Map<String,String> files){
-        this.files=files;
+    public void setFiles(Map<String, String> files) {
+        this.files = files;
+    }
+    public void setParent(String id) {
+        this.parent = id;
     }
 
-    private String createDate(){
-        // 获取当前时间
-        Date now = new Date();
+    public String getID() {
+        return Utils.sha1(this.author, this.date, this.message, this.parent);
+    }
+    public Map<String, String> getFiles(){
+        return files;
+    }
+    public String getDate(){
+        return this.date;
+    }
+    public String getMessage(){
+        return this.message;
+    }
+    public String getParent(){
+        return this.parent;
+    }
+
+
+    private String createDate(Date d) {
         // 创建Formatter对象
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);
         // 格式化日期
         formatter.format("%ta %tb %td %tT %tY %tz",
-                now, now, now, now, now, now);
+                d, d, d, d, d, d);
         // 关闭Formatter
         formatter.close();
         return sb.toString();
+    }
+
+    public void printCommit(){
+        System.out.println("===");
+        System.out.println("commit "+getID());
+        System.out.println("Date: "+date);
+        System.out.println(message+"\n");
     }
 
 }

@@ -14,8 +14,7 @@
      *      |    |--heads
      *      |         |--master 文件内容是末端Commit的40位ID
      *      |--HEAD 文件内容是当前指向的Commit的ID
-     *      |--addstage
-     *      |--removestage
+     *      |--index 文件内容是当前stageArea<fileName,blobName>,blobName==null表示在移除区
      */
 ```
 ---
@@ -23,13 +22,21 @@
 ### Main
 #### Fields
 ### Repository
+- no Instance Variables to suit `Main.java`. All information saved in individual file.
 #### Fields
+- 提交后，暂存区域将被清除。
 ### Commit
 #### Instance Variables
 - Message - contains the message of a commit. 
+- Author - author who submit this commit, equals branch name as I think. 
 - Date - time at which a commit was created. Assigned by the constructor. 
 - Parent - the parent commit of a commit object.
+- Files - file list (as a HashMap Object) of this commit: Map<File file,String blobName>. 
 #### Fields
+- 构造方法
+- get() and set()
+- 获取现实时间并返回指定格式字符串形式
+-
 ### Utils
 #### Fields
 

@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
 /** Represents a gitlet commit object.
@@ -8,13 +9,21 @@ import java.util.*;
  *
  *  @author ruttya
  */
-public class Commit {
+public class Commit implements Serializable {
 
     private String message;
     private String author;
     private String date;
     private String parent;
-    private Map<File,String> files;
+    private Map<String,String> files; //<content file, blob name>
+
+    public Commit(String message, String author, String date, String parent, Map<String, String> files) {
+        this.message = message;
+        this.author = author;
+        this.date = date;
+        this.parent = parent;
+        this.files = files;
+    }
 
     public Commit(String message){
         this.message=message;
@@ -29,12 +38,30 @@ public class Commit {
         return res;
     }
 
-    private void setParent(String id){
+    public void setParent(String id){
         this.parent=id;
+    }
+    public void setDate(Date date){
+        // 创建Formatter对象
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.US);
+        // 格式化日期
+        formatter.format("%ta %tb %td %tT %tY %tz",
+                date, date, date, date, date, date);
+        // 关闭Formatter
+        formatter.close();
+        this.date=sb.toString();
     }
 
     public String getID(){
         return Utils.sha1(this.author,this.date,this.message,this.parent);
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    public void setFiles(Map<String,String> files){
+        this.files=files;
     }
 
     private String createDate(){

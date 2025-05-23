@@ -3,6 +3,7 @@ package gitlet;
 import java.io.IOException;
 
 import static gitlet.Repository.GITLET_DIR;
+import static gitlet.Repository.branch;
 
 /**
  * Driver class for Gitlet, a subset of the Git version-control system.
@@ -65,11 +66,26 @@ public class Main {
                 else if (l==4&&args[2].equals("--")){
                     Repository.checkoutCommit(args[1],args[3]);
                 }
+                else {
+                    System.out.println("Invalid parameter. ");
+                    System.exit(0);
+                }
+                break;
+            case "branch":
+                Repository.branch(args[1]);
+                break;
+            case "rm-branch":
+                Repository.rmBranch(args[1]);
+                break;
+            case "reset":
+                Repository.reset(args[1]);
+                break;
+            case "merge":
+                Repository.merge(args[1]);
                 break;
             default:
                 System.out.println("No command with that name exists.");
                 System.exit(0);
-                // TODO: FILL THE REST IN
         }
     }
 

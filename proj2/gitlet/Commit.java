@@ -35,7 +35,7 @@ public class Commit implements Serializable {
     }
 
     public String getID() {
-        return Utils.sha1(this.author, this.date, this.message, this.parent);
+        return Utils.sha1(this.author+this.date+this.message+this.parent+this.files.toString());
     }
     public Map<String, String> getFiles(){
         return files;
@@ -49,7 +49,9 @@ public class Commit implements Serializable {
     public String getParent(){
         return this.parent;
     }
-
+    public String getAuthor() {
+        return this.author;
+    }
 
     private String createDate(Date d) {
         // 创建Formatter对象
@@ -69,5 +71,6 @@ public class Commit implements Serializable {
         System.out.println("Date: "+date);
         System.out.println(message+"\n");
     }
+
 
 }

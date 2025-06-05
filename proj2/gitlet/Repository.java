@@ -27,7 +27,7 @@ public class Repository {
     public static final File STAGING_AREA = join(GITLET_DIR, "index");
     public static final File HEAD = join(GITLET_DIR, "HEAD");
 
-    static void init() throws IOException {
+    static void init() {
         if (GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             System.exit(0);
@@ -36,8 +36,16 @@ public class Repository {
         OBJS_DIR.mkdir();
         REFS_DIR.mkdir();
         HEADS_DIR.mkdir();
-        STAGING_AREA.createNewFile();
-        HEAD.createNewFile();
+        try {
+            STAGING_AREA.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            HEAD.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         writeObject(STAGING_AREA, new HashMap<>());
 
@@ -60,7 +68,7 @@ public class Repository {
 
     // 保存某个文件作为blob，
     //照此写法Blob.java可以删掉了,返回是否创建了新的blob
-    static boolean saveBlob(String fileName) throws IOException {
+    static boolean saveBlob(String fileName) {
         String name = getBlob(fileName);
         File blob = join(OBJS_DIR, name);
         if (blob.exists()) {
@@ -71,12 +79,12 @@ public class Repository {
         return true;
     }
 
-    static void saveCommit(Commit commit) throws IOException {
+    static void saveCommit(Commit commit) {
         File file = join(OBJS_DIR, commit.getID());
         Utils.writeObject(file, commit);
     }
 
-    static void add2Branch(String branch, Commit commit) throws IOException {
+    static void add2Branch(String branch, Commit commit) {
         File file = join(HEADS_DIR, branch);
         Utils.writeContents(file, commit.getID());
     }
@@ -94,7 +102,7 @@ public class Repository {
         writeObject(STAGING_AREA, (Serializable) area);
     }
 
-    static void addFile(String name) throws IOException {
+    static void addFile(String name) {
         File file = join(CWD, name);
         if (!file.exists()) {
             System.out.println("File does not exist.");
@@ -117,7 +125,7 @@ public class Repository {
         saveStagingArea(stagingArea);
     }
 
-    static void commit(String message) throws IOException {
+    static void commit(String message) {
         /**
          *1.创建完整的commit对象：
          *  author：当前branch name=HEAD文件中/后的文件名

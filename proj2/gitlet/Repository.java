@@ -176,8 +176,8 @@ public class Repository {
     }
 
     private static Commit getCurrentCommit() {
-        String path = readContentsAsString(HEAD);
-        String ID = readContentsAsString(join(HEADS_DIR, path));
+        String branch = getCurrentBranch();
+        String ID = readContentsAsString(join(HEADS_DIR, branch));
         return readObject(join(OBJS_DIR, ID), Commit.class);
     }
     private static String getCurrentBranch(){

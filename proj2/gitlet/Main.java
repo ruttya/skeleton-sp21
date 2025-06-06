@@ -60,10 +60,10 @@ public class Main {
                 if (l==2){
                     Repository.checkoutBranch(args[1]);
                 }
-                else if (l==3&&args[2].equals("--")){
+                else if (l==3&&args[1].equals("--")){
                     Repository.checkoutFile(args[1]);
                 }
-                else if (l==4&&args[2].equals("--")){
+                else if (l==4&&args[1].equals("--")){
                     Repository.checkoutCommit(args[1],args[3]);
                 }
                 else {

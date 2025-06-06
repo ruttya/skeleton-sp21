@@ -106,7 +106,7 @@ public class Repository {
         File file = join(CWD, name);
         if (!file.exists()) {
             System.out.println("File does not exist.");
-            return;
+            System.exit(0);
         }
         Map<String, String> stagingArea = readStagingArea();
         Commit cur=getCurrentCommit();
@@ -177,7 +177,7 @@ public class Repository {
 
     private static Commit getCurrentCommit() {
         String path = readContentsAsString(HEAD);
-        String ID = readContentsAsString(join(CWD, path));
+        String ID = readContentsAsString(join(HEADS_DIR, path));
         return readObject(join(OBJS_DIR, ID), Commit.class);
     }
     private static String getCurrentBranch(){

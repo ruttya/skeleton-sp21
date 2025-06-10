@@ -72,6 +72,7 @@
   2. 若该文件已被标记为待删除（通过gitlet rm命令），执行add命令后将取消其待删除状态
   3. 这是因为对于场景：用户修改文件 → add → 又撤销修改恢复原状 → 忘记取消暂存，若不自动移出暂存区，会导致提交无实际变更的文件版本
 - 关于测试
+  - 舍弃官方的`makefile`
   1. git bash在`gitlet`目录下使用`javac *.java`
   2. 系统`cmd`在`testing`目录执行`python3 ..`测试。`python3 tester.py --verbose samples/test01-init.in`
 # 进度
@@ -81,3 +82,5 @@
 - may8,各种功能放在`Repo`里，`branch`的结构没思路
 - May22, 继续Repo,date问题解决之后优化一下commit对象的构造
 - May22晚上，前面大概写写还没测试，目前进度checkout开始，明天先把add处理完
+- Jun10,checkpoint过啦🥰能本地test之后效率果然高了，中间多sout方便排查捏
+- 

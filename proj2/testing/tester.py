@@ -450,7 +450,7 @@ if __name__ == "__main__":
             environ['CLASSPATH'] = "{}:{}".format(prog_dir, environ['CLASSPATH'])
         else:
             environ['CLASSPATH'] = "{}".format(prog_dir)
-        JAVA_COMMAND = 'exec ' + JAVA_COMMAND
+        # JAVA_COMMAND = 'exec ' + JAVA_COMMAND
 
     num_tests = len(files)
     errs = 0

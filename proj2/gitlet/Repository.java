@@ -109,18 +109,18 @@ public class Repository {
             System.exit(0);
         }
         Map<String, String> stagingArea = readStagingArea();
-        Commit cur=getCurrentCommit();
-        Map<String, String> lastStage=cur.getFiles();
+        Commit cur = getCurrentCommit();
+        Map<String, String> lastStage = cur.getFiles();
         //新增到暂存区
         if (!stagingArea.containsKey(name)) {
             saveBlob(name);
             stagingArea.put(name, getBlob(name));
             // rm过的文件重新保存添加
-        } else if (stagingArea.get(name)==null) {
+        } else if (stagingArea.get(name) == null) {
             stagingArea.put(name, getBlob(name));
             //文件当前工作区版本与最近一次提交中的版本完全一致，且文件已在暂存区，则取消暂存
-        }else if (stagingArea.get(name).equals(lastStage.get(name))){
-            stagingArea.put(name,null);
+        } else if (stagingArea.get(name).equals(lastStage.get(name))) {
+            stagingArea.put(name, null);
         }
         saveStagingArea(stagingArea);
     }
@@ -136,11 +136,8 @@ public class Repository {
          *4. 关于blob。如果add之后commit之前文件内容有修改的话,以add时状态为准，所以add()中存储blob
          * 5.commit完成后清空暂存区
          */
-        String path = readContentsAsString(HEAD);
-        String[] parts = path.split("/");
-        String author = parts[parts.length - 1];
-        String parentID = readContentsAsString(join(HEADS_DIR,author));
-
+        String author = getCurrentBranch();
+        String parentID = readContentsAsString(join(HEADS_DIR, author));
         Map<String, String> files = readStagingArea();
         Commit commit = new Commit(message, author, new Date(), parentID, files);
         saveCommit(commit);
@@ -177,10 +174,11 @@ public class Repository {
 
     private static Commit getCurrentCommit() {
         String branch = getCurrentBranch();
-        String ID = readContentsAsString(join(HEADS_DIR, branch));
-        return readObject(join(OBJS_DIR, ID), Commit.class);
+        String id = readContentsAsString(join(HEADS_DIR, branch));
+        return readObject(join(OBJS_DIR, id), Commit.class);
     }
-    private static String getCurrentBranch(){
+
+    private static String getCurrentBranch() {
         String[] parts = readContentsAsString(HEAD).split("/");
         return parts[parts.length - 1];
     }
@@ -252,10 +250,9 @@ public class Repository {
 
         for (String key : stagingArea.keySet()) {
             assert files != null;
-            if (!files.contains(key)){
+            if (!files.contains(key)) {
                 unTrack.add(key);
-            }
-            else if (stagingArea.get(key) == null) {
+            } else if (stagingArea.get(key) == null) {
                 removeFile.add(key);
             } else {
                 stageFile.add(key);
@@ -285,56 +282,59 @@ public class Repository {
          */
     }
 
-    /** checkout三种情形：
+    /**
+     * checkout三种情形：
      * java gitlet.Main checkout -- [file name]
      * java gitlet.Main checkout [commit id] -- [file name]
      * java gitlet.Main checkout [branch name]
      */
-    static void checkoutCommit(String id, String fileName){
+    static void checkoutCommit(String id, String fileName) {
         //回退工作目录某文件内容
+        System.out.println("Checking out file '" + fileName + "' from commit " + id); // Debug
         //从文件获取指定commit
-        if (!join(OBJS_DIR,id).exists()){
+        if (!join(OBJS_DIR, id).exists()) {
             message("No commit with that id exists.");
             return;
         }
-        Commit commit=readObject(join(OBJS_DIR,id),Commit.class);
-        if (!commit.getFiles().containsKey(fileName)){
+        Commit commit = readObject(join(OBJS_DIR, id), Commit.class);
+        System.out.println("Files in commit: " + commit.getFiles().keySet()); // Debug
+        if (!commit.getFiles().containsKey(fileName)) {
             message("File does not exist in that commit.");
             return;
         }
         //获取此commit中文件对应blob名
-        String blob=getBlob(fileName);
+        String blob = getBlob(fileName);
         //获取blob内容覆写到工作文件，不需要暂存
-        byte[] content=readContents(join(OBJS_DIR,blob));
-        writeContents(join(CWD,fileName),content);
+        byte[] content = readContents(join(OBJS_DIR, blob));
+        writeContents(join(CWD, fileName), content);
         //head不修改
     }
 
     public static void checkoutBranch(String branchName) {
-        File branch= join(HEADS_DIR, branchName);
+        File branch = join(HEADS_DIR, branchName);
         if (!branch.exists()) {
             System.out.println("No such branch exists.");
             System.exit(0);
-        } else if(branchName.equals(getCurrentBranch())) {
+        } else if (branchName.equals(getCurrentBranch())) {
             System.out.println("No need to checkout the current branch.");
             System.exit(0);
         }
 
         Commit targetCommit = readObject(join(OBJS_DIR, readContentsAsString(branch)), Commit.class);
-        Map<String,String> files=targetCommit.getFiles();
-        Map<String,String> stagingArea=readStagingArea();
-        for (String filename:files.keySet()){
+        Map<String, String> files = targetCommit.getFiles();
+        Map<String, String> stagingArea = readStagingArea();
+        for (String filename : files.keySet()) {
             //没暂存的文件不处理
-            if (stagingArea.get(filename)==null){
+            if (stagingArea.get(filename) == null) {
                 System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                 continue;
             }
-            writeContents(join(CWD,filename),readContents(join(OBJS_DIR,files.get(filename))));
+            writeContents(join(CWD, filename), readContents(join(OBJS_DIR, files.get(filename))));
         }
         //Any files that are tracked in the current branch but are not present in the checked-out branch are deleted.
         //暂存区有但checkout中没有的文件被删除
-        for (String filename:stagingArea.keySet()){
-            if (files.get(filename)==null){
+        for (String filename : stagingArea.keySet()) {
+            if (files.get(filename) == null) {
                 restrictedDelete(filename);
             }
         }
@@ -343,28 +343,28 @@ public class Repository {
     }
 
     public static void checkoutFile(String fileName) {
-        Commit cur=getCurrentCommit();
-        checkoutCommit(cur.getID(),fileName);
+        Commit cur = getCurrentCommit();
+        checkoutCommit(cur.getID(), fileName);
     }
 
-    public static void branch(String branchName){
-        String cur=getCurrentBranch();
-        File branch= join(HEADS_DIR, branchName);
-        if (branch.exists()){
+    public static void branch(String branchName) {
+        String cur = getCurrentBranch();
+        File branch = join(HEADS_DIR, branchName);
+        if (branch.exists()) {
             error("A branch with that name already exists.");
             return;
         }
-        writeContents(branch,readContents(join(HEADS_DIR,cur)));
-        writeContents(HEAD,"ref: refs/heads/"+branchName);
+        writeContents(branch, readContents(join(HEADS_DIR, cur)));
+        writeContents(HEAD, "ref: refs/heads/" + branchName);
     }
 
     public static void rmBranch(String branchName) {
-        if (getCurrentBranch()==branchName){
+        if (getCurrentBranch() == branchName) {
             message("Cannot remove the current branch.");
             return;
         }
-        File branch=join(HEADS_DIR,branchName);
-        if (branch.exists()){
+        File branch = join(HEADS_DIR, branchName);
+        if (branch.exists()) {
             message("A branch with that name does not exist.");
             return;
         }
@@ -374,40 +374,40 @@ public class Repository {
     /**
      * 描述：
      * 1. 将工作目录的所有文件回退到指定提交的版本：
-     *    - 恢复该提交中所有被跟踪的文件
-     *    - 删除工作目录中存在的、但该提交未跟踪的文件
+     * - 恢复该提交中所有被跟踪的文件
+     * - 删除工作目录中存在的、但该提交未跟踪的文件
      * 2. 将当前分支的HEAD指针移动到该提交节点
      * 3. 清空暂存区
      * 4. 提交ID支持缩写形式（同checkout）
-     *
+     * <p>
      * 本质行为：带分支指针移动的增强版checkout
      */
     public static void reset(String commitID) {
-        if (!join(OBJS_DIR,commitID).exists()){
+        if (!join(OBJS_DIR, commitID).exists()) {
             System.out.println("No commit with that id exists.");
             return;
         }
         //对于commit中有但目前未暂存的文件，提示并直接退出<-首先进行
-        Commit commit=readObject(join(OBJS_DIR,commitID),Commit.class);
-        Map<String, String> stagingArea=readStagingArea();
-        for (String name:commit.getFiles().keySet()){
-            if (!stagingArea.containsKey(name)){
+        Commit commit = readObject(join(OBJS_DIR, commitID), Commit.class);
+        Map<String, String> stagingArea = readStagingArea();
+        for (String name : commit.getFiles().keySet()) {
+            if (!stagingArea.containsKey(name)) {
                 message("There is an untracked file in the way; delete it, or add and commit it first.");
                 return;
             }
         }
-        List<String> files=plainFilenamesIn(CWD);
-        for (String file :files){
-            if (commit.getFiles().keySet().contains(file)){
-                String blob=commit.getFiles().get(file);
-                writeContents(join(CWD,file),readContents(join(OBJS_DIR,blob)));
-            }else { //commit中不存在的工作文件
+        List<String> files = plainFilenamesIn(CWD);
+        for (String file : files) {
+            if (commit.getFiles().keySet().contains(file)) {
+                String blob = commit.getFiles().get(file);
+                writeContents(join(CWD, file), readContents(join(OBJS_DIR, blob)));
+            } else { //commit中不存在的工作文件
                 restrictedDelete(file);
             }
         }
         //移动HEAD,清空暂存区
-        String branch=getCurrentBranch();
-        writeContents(join(HEADS_DIR,branch),commit.getID());
+        String branch = getCurrentBranch();
+        writeContents(join(HEADS_DIR, branch), commit.getID());
         saveStagingArea(new HashMap<>());
     }
 

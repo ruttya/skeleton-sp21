@@ -1,9 +1,6 @@
 package gitlet;
 
-import java.io.IOException;
-
 import static gitlet.Repository.GITLET_DIR;
-import static gitlet.Repository.branch;
 
 /**
  * Driver class for Gitlet, a subset of the Git version-control system.
@@ -16,7 +13,7 @@ public class Main {
      * Usage: java gitlet.Main ARGS, where ARGS contains
      * <COMMAND> <OPERAND1> <OPERAND2> ...
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Please enter a command.");
             System.exit(0);
@@ -56,17 +53,14 @@ public class Main {
                 break;
             case "checkout":
                 checkGitlet();
-                int l=args.length;
-                if (l==2){
+                int l = args.length;
+                if (l == 2) {
                     Repository.checkoutBranch(args[1]);
-                }
-                else if (l==3&&args[1].equals("--")){
-                    Repository.checkoutFile(args[1]);
-                }
-                else if (l==4&&args[1].equals("--")){
-                    Repository.checkoutCommit(args[1],args[3]);
-                }
-                else {
+                } else if (l == 3 && args[1].equals("--")) {
+                    Repository.checkoutFile(args[2]);
+                } else if (l == 4 && args[2].equals("--")) {
+                    Repository.checkoutCommit(args[1], args[3]);
+                } else {
                     System.out.println("Invalid parameter. ");
                     System.exit(0);
                 }

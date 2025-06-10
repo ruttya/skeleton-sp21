@@ -24,31 +24,39 @@ public class Commit implements Serializable {
         this.parent = parent;
         this.files = files;
     }
+
     public void setAuthor(String author) {
         this.author = author;
     }
+
     public void setFiles(Map<String, String> files) {
         this.files = files;
     }
+
     public void setParent(String id) {
         this.parent = id;
     }
 
     public String getID() {
-        return Utils.sha1(this.author+this.date+this.message+this.parent+this.files.toString());
+        return Utils.sha1(this.author + this.date + this.message + this.parent + this.files.toString());
     }
-    public Map<String, String> getFiles(){
+
+    public Map<String, String> getFiles() {
         return files;
     }
-    public String getDate(){
+
+    public String getDate() {
         return this.date;
     }
-    public String getMessage(){
+
+    public String getMessage() {
         return this.message;
     }
-    public String getParent(){
+
+    public String getParent() {
         return this.parent;
     }
+
     public String getAuthor() {
         return this.author;
     }
@@ -65,11 +73,11 @@ public class Commit implements Serializable {
         return sb.toString();
     }
 
-    public void printCommit(){
+    public void printCommit() {
         System.out.println("===");
-        System.out.println("commit "+getID());
-        System.out.println("Date: "+date);
-        System.out.println(message+"\n");
+        System.out.println("commit " + getID());
+        System.out.println("Date: " + date);
+        System.out.println(message + "\n");
     }
 
 

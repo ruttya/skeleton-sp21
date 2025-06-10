@@ -72,7 +72,6 @@ public class Repository {
         String name = getBlob(fileName);
         File blob = join(OBJS_DIR, name);
         if (blob.exists()) {
-            System.out.println("blob already exists. ");
             return false;
         }
         byte[] content = readContents(join(CWD, fileName));
@@ -107,22 +106,32 @@ public class Repository {
         File file = join(CWD, name);
         if (!file.exists()) {
             System.out.println("File does not exist.");
-            System.exit(0);
+            return;
         }
         Map<String, String> stagingArea = readStagingArea();
         Commit cur = getCurrentCommit();
         Map<String, String> lastStage = cur.getFiles();
-        //新增到暂存区
-        if (!stagingArea.containsKey(name)) {
+        if (!lastStage.containsKey(name)) {
+            //更新暂存区
             saveBlob(name);
             stagingArea.put(name, getBlob(name));
-            // rm过的文件重新保存添加
-        } else if (stagingArea.get(name) == null) {
-            stagingArea.put(name, getBlob(name));
-            //文件当前工作区版本与最近一次提交中的版本完全一致，且文件已在暂存区，则取消暂存
-        } else if (stagingArea.get(name).equals(lastStage.get(name))) {
-            stagingArea.put(name, null);
+        } else if (lastStage.get(name).equals(getBlob(name))) {
+            //文件当前工作区版本与最近一次提交中的版本完全一致，则移出暂存
+            stagingArea.remove(name);
         }
+        /**
+         //新增到暂存区
+         if (!stagingArea.containsKey(name) && !lastStage.containsKey(name)) {
+         saveBlob(name);
+         stagingArea.put(name, getBlob(name));
+         // rm过的文件重新保存添加
+         } else if (stagingArea.get(name) == null) {
+         stagingArea.put(name, getBlob(name));
+         //文件当前工作区版本与最近一次提交中的版本完全一致，且文件已在暂存区，则移出暂存
+         } else if (stagingArea.get(name).equals(lastStage.get(name))) {
+         stagingArea.remove(name);
+         }
+         */
         saveStagingArea(stagingArea);
     }
 
@@ -139,8 +148,20 @@ public class Repository {
          */
         String author = getCurrentBranch();
         String parentID = readContentsAsString(join(HEADS_DIR, author));
-        Map<String, String> files = readStagingArea();
-        Commit commit = new Commit(message, author, new Date(), parentID, files);
+        Map<String, String> stagingArea = readStagingArea();
+        if (stagingArea.isEmpty()) {
+            System.out.println("No changes added to the commit.");
+            return;
+        }
+        // 处理暂存区的删除
+        for (Map.Entry<String, String> entry : stagingArea.entrySet()) {
+            String fileName = entry.getKey();
+            String blob = entry.getValue();
+            if (blob == null) {
+                stagingArea.remove(fileName); // 删除文件
+            }
+        }
+        Commit commit = new Commit(message, author, new Date(), parentID, stagingArea);
         saveCommit(commit);
         writeContents(join(HEADS_DIR, author), commit.getID());
         saveStagingArea(new HashMap<>());
@@ -157,20 +178,25 @@ public class Repository {
          * Failure cases: If the file is neither staged nor tracked by the head commit,
          * print the error message No reason to remove the file.
          */
+        File file = join(CWD, fileName);
+
         Map<String, String> stagingArea = readStagingArea();
         Commit cur = getCurrentCommit();
-        File f = join(CWD, fileName);
+        Map<String, String> lastStage = cur.getFiles();
 
-        if (!stagingArea.containsKey(fileName) || !f.exists()) {
-            System.out.println("No reason to remove the file.");
-            return;
-        }
-        if (cur.getFiles().containsKey(fileName)) {
+        if (lastStage.containsKey(fileName)) {
             //将file加入待删除列表
             stagingArea.put(fileName, null);
             restrictedDelete(fileName);
             saveStagingArea(stagingArea);
+        } else if (stagingArea.containsKey(fileName)) {
+            //仅在暂存区标记为移除状态
+            stagingArea.put(fileName, null);
+            saveStagingArea(stagingArea);
+        } else {
+            System.out.println("No reason to remove the file.");
         }
+
     }
 
     private static Commit getCurrentCommit() {
@@ -206,7 +232,7 @@ public class Repository {
     static void globalLog() {
         List<String> branchs = plainFilenamesIn(HEADS_DIR);
         for (String branch : branchs) {
-            String id = readContentsAsString(join(CWD, branch));
+            String id = readContentsAsString(join(HEADS_DIR, branch));
             Commit cur = readObject(join(OBJS_DIR, id), Commit.class);
             while (cur != null) {
                 cur.printCommit();
@@ -221,7 +247,7 @@ public class Repository {
         List<String> branches = plainFilenamesIn(HEADS_DIR);
         assert branches != null;
         for (String branch : branches) {
-            String id = readContentsAsString(join(CWD, branch));
+            String id = readContentsAsString(join(HEADS_DIR, branch));
             Commit cur = readObject(join(OBJS_DIR, id), Commit.class);
             while (cur != null) {
                 if (cur.getMessage().equals(message)) {
@@ -241,29 +267,45 @@ public class Repository {
 
     //print current status
     static void status() {
+        String cur = getCurrentBranch();
         List<String> branches = plainFilenamesIn(HEADS_DIR);
         System.out.println("=== Branches ===");
-        assert branches != null;
+        System.out.println("*" + cur);
         for (String branch : branches) {
-            System.out.println(branch);
+            if (!branch.equals(cur)) {
+                System.out.println(branch);
+            }
         }
 
         List<String> files = plainFilenamesIn(CWD);
         Map<String, String> stagingArea = readStagingArea();
+        Commit curCommit = getCurrentCommit();
+        Map<String, String> lastStage = curCommit.getFiles();
         List<String> stageFile = new ArrayList<>();
         List<String> removeFile = new ArrayList<>();
         List<String> mod = new ArrayList<>();
         List<String> unTrack = new ArrayList<>();
 
         for (String key : stagingArea.keySet()) {
-            assert files != null;
-            if (!files.contains(key)) {
-                unTrack.add(key);
-            } else if (stagingArea.get(key) == null) {
+            if (stagingArea.get(key) == null) {
                 removeFile.add(key);
-            } else {
+            }else if (!files.contains(key)){
+                //暂存以进行添加，但在工作目录中删除;或
+                mod.add(key+" (deleted)");
+            }else if (!stagingArea.get(key).equals(getBlob(key))){
+                //暂存以进行添加，但内容与工作目录中的内容不同
+                mod.add(key+" (modified)");
+            }
+            else {
                 stageFile.add(key);
             }
+        }
+        System.out.println("CWD Files:"); //debug
+        for (String key:files){
+            if (!stagingArea.containsKey(key)){
+                unTrack.add(key);
+            }
+            System.out.println(key); //debug
         }
         System.out.println("\n=== Staged Files ===");
         for (String name : stageFile) {
@@ -274,19 +316,22 @@ public class Repository {
             System.out.println(name);
         }
         System.out.println("\n=== Modifications Not Staged For Commit ===");
-        /** 在当前提交中跟踪，在工作目录中更改，但未暂存;或
-         暂存以进行添加，但内容与工作目录中的内容不同;或
-         暂存以进行添加，但在工作目录中删除;或
-         不是暂存以供删除，而是在当前提交中跟踪并从工作目录中删除。
-         * TODO:如果currentCommit中存在但files中不存在则为deleted?
-         * 如果files中存在但blob后与commit中不一致则为modified?
+        /** 1.在当前提交中跟踪，在工作目录中更改，但未暂存;或
+         2.暂存以进行添加，但内容与工作目录中的内容不同;或
+         3.暂存以进行添加，但在工作目录中删除;或
+         4.不是暂存以供删除，而是在当前提交中跟踪并从工作目录中删除。
          * junk.txt (deleted)
          * wug3.txt (modified)
          */
+        for (String name:mod){
+            System.out.println(name);
+        }
         System.out.println("\n=== Untracked Files ===");
         /**工作目录中但既不暂存以进行添加也未被跟踪的文件。这包括已暂存以供删除的文件，
-         * stagingArea中存在但files中不存在的文件?
          */
+        for (String name : unTrack) {
+            System.out.println(name);
+        }
     }
 
     /**

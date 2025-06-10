@@ -72,10 +72,12 @@ public class Repository {
         String name = getBlob(fileName);
         File blob = join(OBJS_DIR, name);
         if (blob.exists()) {
+            System.out.println("blob already exists. ");
             return false;
         }
         byte[] content = readContents(join(CWD, fileName));
         Utils.writeContents(blob, content);
+        //System.out.println("File: "+fileName+" saved as blob: "+name+". ");
         return true;
     }
 
@@ -290,21 +292,22 @@ public class Repository {
      */
     static void checkoutCommit(String id, String fileName) {
         //回退工作目录某文件内容
-        System.out.println("Checking out file '" + fileName + "' from commit " + id); // Debug
+        //System.out.println("Checking out file '" + fileName + "' from commit " + id); // Debug
         //从文件获取指定commit
         if (!join(OBJS_DIR, id).exists()) {
             message("No commit with that id exists.");
             return;
         }
         Commit commit = readObject(join(OBJS_DIR, id), Commit.class);
-        System.out.println("Files in commit: " + commit.getFiles().keySet()); // Debug
+        //System.out.println("Files in commit: " + commit.getFiles().keySet()); // Debug
         if (!commit.getFiles().containsKey(fileName)) {
             message("File does not exist in that commit.");
             return;
         }
         //获取此commit中文件对应blob名
-        String blob = getBlob(fileName);
+        String blob = commit.getFiles().get(fileName);
         //获取blob内容覆写到工作文件，不需要暂存
+        //System.out.println("blob: "+blob+",blob path: "+join(OBJS_DIR,blob).toString());
         byte[] content = readContents(join(OBJS_DIR, blob));
         writeContents(join(CWD, fileName), content);
         //head不修改

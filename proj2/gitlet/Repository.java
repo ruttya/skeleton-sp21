@@ -111,27 +111,14 @@ public class Repository {
         Map<String, String> stagingArea = readStagingArea();
         Commit cur = getCurrentCommit();
         Map<String, String> lastStage = cur.getFiles();
-        if (!lastStage.containsKey(name)) {
+        if (lastStage.containsKey(name) && lastStage.get(name).equals(getBlob(name))) {
+            //文件当前工作区版本与最近一次提交中的版本完全一致，则移出暂存
+            stagingArea.remove(name);
+        }else {
             //更新暂存区
             saveBlob(name);
             stagingArea.put(name, getBlob(name));
-        } else if (lastStage.get(name).equals(getBlob(name))) {
-            //文件当前工作区版本与最近一次提交中的版本完全一致，则移出暂存
-            stagingArea.remove(name);
         }
-        /**
-         //新增到暂存区
-         if (!stagingArea.containsKey(name) && !lastStage.containsKey(name)) {
-         saveBlob(name);
-         stagingArea.put(name, getBlob(name));
-         // rm过的文件重新保存添加
-         } else if (stagingArea.get(name) == null) {
-         stagingArea.put(name, getBlob(name));
-         //文件当前工作区版本与最近一次提交中的版本完全一致，且文件已在暂存区，则移出暂存
-         } else if (stagingArea.get(name).equals(lastStage.get(name))) {
-         stagingArea.remove(name);
-         }
-         */
         saveStagingArea(stagingArea);
     }
 
@@ -146,6 +133,7 @@ public class Repository {
          *4. 关于blob。如果add之后commit之前文件内容有修改的话,以add时状态为准，所以add()中存储blob
          * 5.commit完成后清空暂存区
          */
+
         String author = getCurrentBranch();
         String parentID = readContentsAsString(join(HEADS_DIR, author));
         Map<String, String> stagingArea = readStagingArea();
@@ -158,7 +146,7 @@ public class Repository {
             String fileName = entry.getKey();
             String blob = entry.getValue();
             if (blob == null) {
-                stagingArea.remove(fileName); // 删除文件
+                stagingArea.remove(fileName); // 移除文件名
             }
         }
         Commit commit = new Commit(message, author, new Date(), parentID, stagingArea);
@@ -281,31 +269,54 @@ public class Repository {
         Map<String, String> stagingArea = readStagingArea();
         Commit curCommit = getCurrentCommit();
         Map<String, String> lastStage = curCommit.getFiles();
-        List<String> stageFile = new ArrayList<>();
-        List<String> removeFile = new ArrayList<>();
+        Set<String> stageFile = new HashSet<>();
+        Set<String> removeFile = new HashSet<>();
+        /**
+         *          * 1.已被当前提交跟踪，在工作目录中被修改，但未暂存；或.(遍历工作目录
+         *          * last.contains(file) && !last.get(file).equals(getblob(file))标记(modified)
+         *          2.已暂存准备添加，但与工作目录中的内容不一致；或。(遍历暂存区
+         *          stagingArea.contains(file) && !stagingArea.get(file).equals(getblob(file))标记(modified)
+         *          3.已暂存准备添加，但在工作目录中被删除；或。(遍历暂存区
+         *          stagingArea.get(key)!=null && !files.contains(key),标记(deleted)
+         *          4.未被暂存区标记为移除，但在当前提交中被跟踪且在工作目录中被删除。
+         *          stagingArea.get(key)!=null && last.contains(key) && !files.contains(key)标记(deleted)
+         */
         List<String> mod = new ArrayList<>();
-        List<String> unTrack = new ArrayList<>();
 
+        /**工作目录中存在但既未被暂存添加也未被跟踪的文件。这包括那些已被暂存移除，但之后又被重新创建（Gitlet不知情）的文件。
+         * 请忽略可能存在的任何子目录，因为Gitlet不处理子目录。
+         */
+        List<String> unTrack = new ArrayList<>();
+        //要求遍历stagingArea、工作目录
         for (String key : stagingArea.keySet()) {
             if (stagingArea.get(key) == null) {
-                removeFile.add(key);
+                if (!files.contains(key)){
+                    removeFile.add(key);
+                }
             }else if (!files.contains(key)){
-                //暂存以进行添加，但在工作目录中删除;或
+                //3.暂存以进行添加，但在工作目录中删除;或4.
                 mod.add(key+" (deleted)");
             }else if (!stagingArea.get(key).equals(getBlob(key))){
-                //暂存以进行添加，但内容与工作目录中的内容不同
+                //2.暂存以进行添加，但内容与工作目录中的内容不同
                 mod.add(key+" (modified)");
             }
             else {
                 stageFile.add(key);
             }
         }
-        System.out.println("CWD Files:"); //debug
+        //System.out.println("CWD Files:"); //debug
+        //    System.out.println(key); //debug
         for (String key:files){
-            if (!stagingArea.containsKey(key)){
+            if (lastStage.containsKey(key)){
+                //1.已被当前提交跟踪，在工作目录中被修改，但未暂存
+                if (!stagingArea.containsKey(key)&&!lastStage.get(key).equals(getBlob(key))){
+                    mod.add(key+" (modified)");
+                }
+            }else if(stagingArea.get(key)==null){
+                //工作目录中存在，但 既不在当前commit中，也不在暂存区中 的文件。
+                //rm过但工作目录中存在的也算此类
                 unTrack.add(key);
             }
-            System.out.println(key); //debug
         }
         System.out.println("\n=== Staged Files ===");
         for (String name : stageFile) {
@@ -316,10 +327,7 @@ public class Repository {
             System.out.println(name);
         }
         System.out.println("\n=== Modifications Not Staged For Commit ===");
-        /** 1.在当前提交中跟踪，在工作目录中更改，但未暂存;或
-         2.暂存以进行添加，但内容与工作目录中的内容不同;或
-         3.暂存以进行添加，但在工作目录中删除;或
-         4.不是暂存以供删除，而是在当前提交中跟踪并从工作目录中删除。
+        /**
          * junk.txt (deleted)
          * wug3.txt (modified)
          */
@@ -327,11 +335,10 @@ public class Repository {
             System.out.println(name);
         }
         System.out.println("\n=== Untracked Files ===");
-        /**工作目录中但既不暂存以进行添加也未被跟踪的文件。这包括已暂存以供删除的文件，
-         */
         for (String name : unTrack) {
             System.out.println(name);
         }
+        System.out.println("");
     }
 
     /**

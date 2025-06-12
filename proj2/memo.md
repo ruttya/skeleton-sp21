@@ -75,6 +75,8 @@
   - 舍弃官方的`makefile`
   1. git bash在`gitlet`目录下使用`javac *.java`
   2. 系统`cmd`在`testing`目录执行`python3 ..`测试。`python3 tester.py --verbose samples/test01-init.in`
+- 关于`commit`
+  1. 暂存区有改动痕迹，但其他在上一次提交后未修改也未add/rm的文件将在此次commit中被继承
 # 进度
 - apr17，lab6花了一整个白天（晚睡摸鱼版，蚌
 - 本质上我没彻底搞明白git本身的步骤（我觉得是英语不精，实现应该还好，没有边缘问题
@@ -83,4 +85,5 @@
 - May22, 继续Repo,date问题解决之后优化一下commit对象的构造
 - May22晚上，前面大概写写还没测试，目前进度checkout开始，明天先把add处理完
 - Jun10,checkpoint过啦🥰能本地test之后效率果然高了，中间多sout方便排查捏
-- status 14 test没过
+- Jun11,完成了status，顺便修改了commit的逻辑
+- Jun12，reset有问题导致test24过不去，根据.in文件检查此处untrack逻辑

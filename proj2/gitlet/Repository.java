@@ -114,7 +114,7 @@ public class Repository {
         if (lastStage.containsKey(name) && lastStage.get(name).equals(getBlob(name))) {
             //文件当前工作区版本与最近一次提交中的版本完全一致，则移出暂存
             stagingArea.remove(name);
-        }else {
+        } else {
             //更新暂存区
             saveBlob(name);
             stagingArea.put(name, getBlob(name));
@@ -141,15 +141,19 @@ public class Repository {
             System.out.println("No changes added to the commit.");
             return;
         }
+        Commit cur = getCurrentCommit();
+        Map<String, String> lastStage = cur.getFiles();
         // 处理暂存区的删除
         for (Map.Entry<String, String> entry : stagingArea.entrySet()) {
             String fileName = entry.getKey();
             String blob = entry.getValue();
             if (blob == null) {
-                stagingArea.remove(fileName); // 移除文件名
+                lastStage.remove(fileName);// 移除文件名
+            } else {
+                lastStage.put(fileName, blob);
             }
         }
-        Commit commit = new Commit(message, author, new Date(), parentID, stagingArea);
+        Commit commit = new Commit(message, author, new Date(), parentID, lastStage);
         saveCommit(commit);
         writeContents(join(HEADS_DIR, author), commit.getID());
         saveStagingArea(new HashMap<>());
@@ -175,7 +179,7 @@ public class Repository {
         if (lastStage.containsKey(fileName)) {
             //将file加入待删除列表
             stagingArea.put(fileName, null);
-            restrictedDelete(fileName);
+            restrictedDelete(file);
             saveStagingArea(stagingArea);
         } else if (stagingArea.containsKey(fileName)) {
             //仅在暂存区标记为移除状态
@@ -290,29 +294,28 @@ public class Repository {
         //要求遍历stagingArea、工作目录
         for (String key : stagingArea.keySet()) {
             if (stagingArea.get(key) == null) {
-                if (!files.contains(key)){
+                if (!files.contains(key)) {
                     removeFile.add(key);
                 }
-            }else if (!files.contains(key)){
+            } else if (!files.contains(key)) {
                 //3.暂存以进行添加，但在工作目录中删除;或4.
-                mod.add(key+" (deleted)");
-            }else if (!stagingArea.get(key).equals(getBlob(key))){
+                mod.add(key + " (deleted)");
+            } else if (!stagingArea.get(key).equals(getBlob(key))) {
                 //2.暂存以进行添加，但内容与工作目录中的内容不同
-                mod.add(key+" (modified)");
-            }
-            else {
+                mod.add(key + " (modified)");
+            } else {
                 stageFile.add(key);
             }
         }
         //System.out.println("CWD Files:"); //debug
         //    System.out.println(key); //debug
-        for (String key:files){
-            if (lastStage.containsKey(key)){
+        for (String key : files) {
+            if (lastStage.containsKey(key)) {
                 //1.已被当前提交跟踪，在工作目录中被修改，但未暂存
-                if (!stagingArea.containsKey(key)&&!lastStage.get(key).equals(getBlob(key))){
-                    mod.add(key+" (modified)");
+                if (!stagingArea.containsKey(key) && !lastStage.get(key).equals(getBlob(key))) {
+                    mod.add(key + " (modified)");
                 }
-            }else if(stagingArea.get(key)==null){
+            } else if (stagingArea.get(key) == null) {
                 //工作目录中存在，但 既不在当前commit中，也不在暂存区中 的文件。
                 //rm过但工作目录中存在的也算此类
                 unTrack.add(key);
@@ -331,7 +334,7 @@ public class Repository {
          * junk.txt (deleted)
          * wug3.txt (modified)
          */
-        for (String name:mod){
+        for (String name : mod) {
             System.out.println(name);
         }
         System.out.println("\n=== Untracked Files ===");
@@ -375,24 +378,29 @@ public class Repository {
             System.out.println("No need to checkout the current branch.");
             System.exit(0);
         }
-
+        //要恢复到的branch对应的commitID
         Commit targetCommit = readObject(join(OBJS_DIR, readContentsAsString(branch)), Commit.class);
-        Map<String, String> files = targetCommit.getFiles();
+        //要恢复到的branch对应的文件列表
+        Map<String, String> tarFiles = targetCommit.getFiles();
+        //当前工作目录中的文件列表
+        List<String> files = Utils.plainFilenamesIn(CWD);
+        //最后一次提交中的文件列表
+        Commit curCommit = getCurrentCommit();
+        Map<String, String> lastStage = curCommit.getFiles();
+
         Map<String, String> stagingArea = readStagingArea();
-        for (String filename : files.keySet()) {
-            //没暂存的文件不处理
-            if (stagingArea.get(filename) == null) {
+
+        for (String key : files) {
+            if (stagingArea.get(key) == null && tarFiles.containsKey(key) && !tarFiles.get(key).equals(getBlob(key))) {
+                //存在未追踪的文件 TODO:检查一下这里untracked的明确含义，是否和status中相同
                 System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
-                continue;
+                return;
             }
-            writeContents(join(CWD, filename), readContents(join(OBJS_DIR, files.get(filename))));
         }
-        //Any files that are tracked in the current branch but are not present in the checked-out branch are deleted.
-        //暂存区有但checkout中没有的文件被删除
-        for (String filename : stagingArea.keySet()) {
-            if (files.get(filename) == null) {
-                restrictedDelete(filename);
-            }
+        //TODO:全部检查结束后再执行覆写
+        for (String key : tarFiles.keySet()) {
+            byte[] content = readContents(join(OBJS_DIR, tarFiles.get(key)));
+            writeContents(join(CWD, key), content);
         }
         saveStagingArea(new HashMap<>());
         writeContents(HEAD, "ref: refs/heads/" + branchName);

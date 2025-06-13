@@ -133,7 +133,10 @@ public class Repository {
          *4. 关于blob。如果add之后commit之前文件内容有修改的话,以add时状态为准，所以add()中存储blob
          * 5.commit完成后清空暂存区
          */
-
+        if (message=="") {
+            System.out.println("Please enter a commit message.");
+            return;
+        }
         String author = getCurrentBranch();
         String parentID = readContentsAsString(join(HEADS_DIR, author));
         Map<String, String> stagingArea = readStagingArea();
@@ -384,20 +387,16 @@ public class Repository {
         Map<String, String> tarFiles = targetCommit.getFiles();
         //当前工作目录中的文件列表
         List<String> files = Utils.plainFilenamesIn(CWD);
-        //最后一次提交中的文件列表
-        Commit curCommit = getCurrentCommit();
-        Map<String, String> lastStage = curCommit.getFiles();
-
         Map<String, String> stagingArea = readStagingArea();
 
         for (String key : files) {
             if (stagingArea.get(key) == null && tarFiles.containsKey(key) && !tarFiles.get(key).equals(getBlob(key))) {
-                //存在未追踪的文件 TODO:检查一下这里untracked的明确含义，是否和status中相同
+                //存在未追踪(且即将被覆写)的文件
                 System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                 return;
             }
         }
-        //TODO:全部检查结束后再执行覆写
+        //全部检查结束后再执行覆写
         for (String key : tarFiles.keySet()) {
             byte[] content = readContents(join(OBJS_DIR, tarFiles.get(key)));
             writeContents(join(CWD, key), content);
@@ -451,27 +450,31 @@ public class Repository {
             System.out.println("No commit with that id exists.");
             return;
         }
-        //对于commit中有但目前未暂存的文件，提示并直接退出<-首先进行
-        Commit commit = readObject(join(OBJS_DIR, commitID), Commit.class);
+        //要恢复到的文件列表
+        Map<String, String> tarFiles = readObject(join(OBJS_DIR, commitID), Commit.class).getFiles();
+        //当前工作目录中的文件列表
+        List<String> files = Utils.plainFilenamesIn(CWD);
         Map<String, String> stagingArea = readStagingArea();
-        for (String name : commit.getFiles().keySet()) {
-            if (!stagingArea.containsKey(name)) {
-                message("There is an untracked file in the way; delete it, or add and commit it first.");
+
+        for (String key : files) {
+            if (stagingArea.get(key) == null && tarFiles.containsKey(key) && !tarFiles.get(key).equals(getBlob(key))) {
+                //存在未追踪(且即将被覆写)的文件
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                 return;
             }
         }
-        List<String> files = plainFilenamesIn(CWD);
-        for (String file : files) {
-            if (commit.getFiles().keySet().contains(file)) {
-                String blob = commit.getFiles().get(file);
-                writeContents(join(CWD, file), readContents(join(OBJS_DIR, blob)));
+        //TODO:全部检查结束后再执行覆写
+        for (String key : files) {
+            if (tarFiles.containsKey(key)) {
+                String blob = tarFiles.get(key);
+                writeContents(join(CWD, key), readContents(join(OBJS_DIR, blob)));
             } else { //commit中不存在的工作文件
-                restrictedDelete(file);
+                restrictedDelete(join(CWD,key));
             }
         }
         //移动HEAD,清空暂存区
         String branch = getCurrentBranch();
-        writeContents(join(HEADS_DIR, branch), commit.getID());
+        writeContents(join(HEADS_DIR, branch), commitID);
         saveStagingArea(new HashMap<>());
     }
 

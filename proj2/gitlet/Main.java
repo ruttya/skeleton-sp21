@@ -56,10 +56,20 @@ public class Main {
                 int l = args.length;
                 if (l == 2) {
                     Repository.checkoutBranch(args[1]);
-                } else if (l == 3 && args[1].equals("--")) {
-                    Repository.checkoutFile(args[2]);
-                } else if (l == 4 && args[2].equals("--")) {
-                    Repository.checkoutCommit(args[1], args[3]);
+                } else if (l == 3) {
+                    if (args[1].equals("--")) {
+                        Repository.checkoutFile(args[2]);
+                    } else {
+                        System.out.println("Incorrect operands.");
+                        System.exit(0);
+                    }
+                } else if (l == 4) {
+                    if (args[2].equals("--")) {
+                        Repository.checkoutCommit(args[1], args[3]);
+                    } else {
+                        System.out.println("Incorrect operands.");
+                        System.exit(0);
+                    }
                 } else {
                     System.out.println("Invalid parameter. ");
                     System.exit(0);

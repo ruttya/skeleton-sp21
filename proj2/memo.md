@@ -75,6 +75,7 @@
   - 舍弃官方的`makefile`
   1. git bash在`gitlet`目录下使用`javac *.java`
   2. 系统`cmd`在`testing`目录执行`python3 ..`测试。`python3 tester.py --verbose samples/test01-init.in`
+  3. `reset [commitID]`之后`global-log`应该显示reset位置之后的commit吗？
 - 关于`commit`
   1. 暂存区有改动痕迹，但其他在上一次提交后未修改也未add/rm的文件将在此次commit中被继承
 # 进度
@@ -84,6 +85,22 @@
 - may8,各种功能放在`Repo`里，`branch`的结构没思路
 - May22, 继续Repo,date问题解决之后优化一下commit对象的构造
 - May22晚上，前面大概写写还没测试，目前进度checkout开始，明天先把add处理完
-- Jun10,checkpoint过啦🥰能本地test之后效率果然高了，中间多sout方便排查捏
-- Jun11,完成了status，顺便修改了commit的逻辑
-- Jun12，reset有问题导致test24过不去，根据.in文件检查此处untrack逻辑
+- Jun10，checkpoint过啦🥰能本地test之后效率果然高了，中间多sout方便排查捏
+- Jun11，完成了`status`，顺便修改了commit的逻辑
+- Jun12，`reset`有问题导致test24过不去，根据.in文件检查此处untrack逻辑
+- Jun13
+  - 修改了`global-log`和`find`：从目录中遍历所有commit，避开`reset`/`checkout`的影响
+  - 修正了`checkoutBranch`：先检，然后执行覆写或忽略
+- Failed tests:
+- 33 merge-no-conflicts (0/59.259)
+- 34 merge-conflicts (0/74.074)
+- 35 merge-rm-conflicts (0/74.074)
+- 36 merge-err (0/59.259)
+- 36a merge-parent2 (0/44.444)
+- 39 short-uid (0/59.259)
+- 40 special-merge-cases (0/59.259)
+- 43 bai-merge (0/88.889)
+- 101 ec-untracked (0/32)
+- 102 ec-remote-fetch-push (0/24)
+- 103 ec-remote-fetch-pull (0/24)
+- 104 ec-bad-remotes-err (0/16)

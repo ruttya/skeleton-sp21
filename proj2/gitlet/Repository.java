@@ -133,7 +133,7 @@ public class Repository {
          *4. 关于blob。如果add之后commit之前文件内容有修改的话,以add时状态为准，所以add()中存储blob
          * 5.commit完成后清空暂存区
          */
-        if (message=="") {
+        if (message == "") {
             System.out.println("Please enter a commit message.");
             return;
         }
@@ -225,13 +225,15 @@ public class Repository {
     }
 
     static void globalLog() {
-        List<String> branchs = plainFilenamesIn(HEADS_DIR);
-        for (String branch : branchs) {
-            String id = readContentsAsString(join(HEADS_DIR, branch));
-            Commit cur = readObject(join(OBJS_DIR, id), Commit.class);
-            while (cur != null) {
-                cur.printCommit();
-                cur = getParent(cur);
+        List<String> objs = plainFilenamesIn(OBJS_DIR);
+        for (String obj : objs) {
+            Commit commit;
+            try {
+                commit = readObject(join(OBJS_DIR, obj), Commit.class);
+                commit.printCommit();
+            } catch (IllegalArgumentException e) {
+                // 捕获类型不匹配的异常，继续下一个文件
+                continue;
             }
         }
     }
@@ -239,16 +241,18 @@ public class Repository {
     //find commit by message and print commitID
     static void find(String message) {
         List<String> res = new ArrayList<>();
-        List<String> branches = plainFilenamesIn(HEADS_DIR);
-        assert branches != null;
-        for (String branch : branches) {
-            String id = readContentsAsString(join(HEADS_DIR, branch));
-            Commit cur = readObject(join(OBJS_DIR, id), Commit.class);
-            while (cur != null) {
-                if (cur.getMessage().equals(message)) {
-                    res.add(cur.getID());
+
+        List<String> objs = plainFilenamesIn(OBJS_DIR);
+        for (String obj : objs) {
+            Commit commit;
+            try {
+                commit = readObject(join(OBJS_DIR, obj), Commit.class);
+                if (commit.getMessage().equals(message)) {
+                    res.add(commit.getID());
                 }
-                cur = getParent(cur);
+            } catch (IllegalArgumentException e) {
+                // 捕获类型不匹配的异常，继续下一个文件
+                continue;
             }
         }
         if (res.isEmpty()) {
@@ -385,6 +389,9 @@ public class Repository {
         Commit targetCommit = readObject(join(OBJS_DIR, readContentsAsString(branch)), Commit.class);
         //要恢复到的branch对应的文件列表
         Map<String, String> tarFiles = targetCommit.getFiles();
+        //最新commit中的文件列表
+        Commit cur = getCurrentCommit();
+        Map<String, String> lastStage = cur.getFiles();
         //当前工作目录中的文件列表
         List<String> files = Utils.plainFilenamesIn(CWD);
         Map<String, String> stagingArea = readStagingArea();
@@ -396,7 +403,14 @@ public class Repository {
                 return;
             }
         }
-        //全部检查结束后再执行覆写
+        //当前分支跟踪(lastStage)存在但target中不存在的文件：要在工作目录中删除
+        //lastStage中不存在但工作目录存在的文件：忽略
+        for (String key : lastStage.keySet()) {
+            if (!tarFiles.containsKey(key)) {
+                restrictedDelete(join(CWD, key));
+            }
+        }
+        //tar中存在的文件要覆写
         for (String key : tarFiles.keySet()) {
             byte[] content = readContents(join(OBJS_DIR, tarFiles.get(key)));
             writeContents(join(CWD, key), content);
@@ -410,28 +424,28 @@ public class Repository {
         checkoutCommit(cur.getID(), fileName);
     }
 
+    //branch()只在当前状态创建branch，不移动HEAD指向
     public static void branch(String branchName) {
-        String cur = getCurrentBranch();
+        String curBranch = getCurrentBranch();
         File branch = join(HEADS_DIR, branchName);
         if (branch.exists()) {
-            error("A branch with that name already exists.");
-            return;
+            message("A branch with that name already exists.");
+        } else {
+            writeContents(branch, readContents(join(HEADS_DIR, curBranch)));
         }
-        writeContents(branch, readContents(join(HEADS_DIR, cur)));
-        writeContents(HEAD, "ref: refs/heads/" + branchName);
     }
 
     public static void rmBranch(String branchName) {
-        if (getCurrentBranch() == branchName) {
+        if (getCurrentBranch().equals(branchName)) {
             message("Cannot remove the current branch.");
-            return;
+        }else {
+            File branch = join(HEADS_DIR, branchName);
+            if (branch.exists()) {
+                branch.delete();
+            } else {
+                message("A branch with that name does not exist.");
+            }
         }
-        File branch = join(HEADS_DIR, branchName);
-        if (branch.exists()) {
-            message("A branch with that name does not exist.");
-            return;
-        }
-        restrictedDelete(branch);
     }
 
     /**
@@ -463,14 +477,16 @@ public class Repository {
                 return;
             }
         }
-        //TODO:全部检查结束后再执行覆写
+        //全部检查结束后再执行覆写
         for (String key : files) {
-            if (tarFiles.containsKey(key)) {
-                String blob = tarFiles.get(key);
-                writeContents(join(CWD, key), readContents(join(OBJS_DIR, blob)));
-            } else { //commit中不存在的工作文件
-                restrictedDelete(join(CWD,key));
+            if (!tarFiles.containsKey(key)) {
+                //commit中不存在的工作文件
+                restrictedDelete(join(CWD, key));
             }
+        }
+        for (String key : tarFiles.keySet()) {
+            String blob = tarFiles.get(key);
+            writeContents(join(CWD, key), readContents(join(OBJS_DIR, blob)));
         }
         //移动HEAD,清空暂存区
         String branch = getCurrentBranch();
@@ -481,5 +497,29 @@ public class Repository {
     //Merges files from the given branch into the current branch.
     public static void merge(String branchName) {
         //TODO:merge
+
+    }
+
+    //add-remote [remote name] [name of remote directory]/.gitlet
+    public static void addRemote(String name){
+
+    }
+    //java gitlet.Main rm-remote [remote name]
+    public static void rmRemote(String name){
+
+    }
+    //java gitlet.Main push [remote name] [remote branch name]
+    public static void push(String RemoteName,String branchName){
+
+    }
+
+    //java gitlet.Main fetch [remote name] [remote branch name]
+    public static void fetch(String RemoteName,String branchName){
+
+    }
+
+    //java gitlet.Main pull [remote name] [remote branch name]
+    public static void pull(String remoteName,String branchName){
+
     }
 }
